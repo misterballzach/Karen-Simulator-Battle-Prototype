@@ -70,10 +70,24 @@ public class BattleSystem : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
-        // Simple AI: play the first card in hand
-        if (enemy.hand.Count > 0)
+        // Simple AI: find the first playable card and play it
+        Card cardToPlay = null;
+        foreach (Card card in enemy.hand)
         {
-            enemy.PlayCard(enemy.hand[0], player);
+            if (enemy.currentMana >= card.cost)
+            {
+                cardToPlay = card;
+                break;
+            }
+        }
+
+        if (cardToPlay != null)
+        {
+            enemy.PlayCard(cardToPlay, player);
+        }
+        else
+        {
+            Debug.Log("Enemy has no playable cards.");
         }
 
         yield return new WaitForSeconds(1f);

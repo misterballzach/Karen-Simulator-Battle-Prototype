@@ -5,6 +5,8 @@ public class Entity : MonoBehaviour
 {
     public int maxHealth = 100;
     public int currentHealth;
+    public int maxMana = 100;
+    public int currentMana;
 
     public List<Card> deck = new List<Card>();
     public List<Card> hand = new List<Card>();
@@ -12,20 +14,43 @@ public class Entity : MonoBehaviour
 
     public List<StatusEffect> statusEffects = new List<StatusEffect>();
 
+    public List<Element> elementalWeaknesses = new List<Element>();
+    public List<Element> elementalResistances = new List<Element>();
+
     void Start()
     {
         currentHealth = maxHealth;
+        currentMana = maxMana;
         ShuffleDeck();
     }
 
     public void TakeDamage(int amount)
     {
-        currentHealth -= amount;
+        TakeDamage(amount, Element.Neutral);
+    }
+
+    public void TakeDamage(int amount, Element element)
+    {
+        float damageMultiplier = 1f;
+        if (elementalWeaknesses.Contains(element))
+        {
+            damageMultiplier = 2f;
+            Debug.Log($"{name} is weak to {element}!");
+        }
+        else if (elementalResistances.Contains(element))
+        {
+            damageMultiplier = 0.5f;
+            Debug.Log($"{name} is resistant to {element}!");
+        }
+
+        int totalDamage = Mathf.RoundToInt(amount * damageMultiplier);
+
+        currentHealth -= totalDamage;
         if (currentHealth < 0)
         {
             currentHealth = 0;
         }
-        Debug.Log($"{name} took {amount} damage, now has {currentHealth} health.");
+        Debug.Log($"{name} took {totalDamage} damage, now has {currentHealth} health.");
     }
 
     public void Heal(int amount)
@@ -64,14 +89,21 @@ public class Entity : MonoBehaviour
         }
     }
 
-    public void PlayCard(Card card, Entity target)
+    public bool PlayCard(Card card, Entity target)
     {
-        if (hand.Contains(card))
+        if (hand.Contains(card) && currentMana >= card.cost)
         {
+            currentMana -= card.cost;
             card.Use(target);
             hand.Remove(card);
             discardPile.Add(card);
-            Debug.Log($"{name} played {card.name}.");
+            Debug.Log($"{name} played {card.name} for {card.cost} mana.");
+            return true;
+        }
+        else
+        {
+            Debug.Log($"Not enough mana to play {card.name}.");
+            return false;
         }
     }
 
@@ -94,6 +126,14 @@ public class Entity : MonoBehaviour
 
     public void OnTurnStart()
     {
+        // Regenerate mana
+        currentMana += 10;
+        if (currentMana > maxMana)
+        {
+            currentMana = maxMana;
+        }
+        Debug.Log($"{name} regenerated 10 mana, now has {currentMana} mana.");
+
         foreach (var effect in statusEffects)
         {
             effect.OnTurnStart();

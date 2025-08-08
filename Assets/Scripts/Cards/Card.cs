@@ -7,6 +7,7 @@ public class Card : ScriptableObject
     public string description;
     public Sprite artwork;
     public int cost;
+    public Element element;
 
     public virtual void Use(Entity target)
     {

@@ -12,6 +12,7 @@ public class Encounter : MonoBehaviour
     public Location currentLocation;
 
     public ArgumentHandUI playerHandUI;
+    public ConsequenceList consequenceList;
 
     private Dictionary<VerbalAbility, int> playerCooldowns = new Dictionary<VerbalAbility, int>();
     private Dictionary<VerbalAbility, int> enemyCooldowns = new Dictionary<VerbalAbility, int>();
@@ -76,6 +77,7 @@ public class Encounter : MonoBehaviour
         {
             ApplyReputationModifiers(ability);
             TriggerMeterGains(player, ability);
+            CheckEscalationRisk(player, ability);
 
             if (ability.cooldown > 0)
             {
@@ -129,57 +131,20 @@ public class Encounter : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         VerbalAbility bestAbility = null;
-        float bestScore = -1f;
-
-        foreach (VerbalAbility ability in enemy.preparedArguments)
+        if (enemy.aiProfile != null)
         {
-            if (enemyCooldowns.ContainsKey(ability)) continue;
-
-            int finalCost = Mathf.Max(0, ability.cost + enemy.credibilityCostModifier);
-            if (enemy.currentCredibility < finalCost) continue;
-
-            float currentScore = 0f;
-
-            // --- AI Scoring Logic ---
-            if (ability is DemandRefundAbility demand)
-            {
-                currentScore = demand.emotionalDamage * 1.5f; // Prioritize damage
-                if (player.rhetoricalWeaknesses.Contains(ability.rhetoricalClass)) currentScore *= 2f;
-                if (demand.emotionalDamage >= player.currentEmotionalStamina) currentScore += 1000; // Lethal is high priority
-            }
-            else if (ability is FakeCryAbility cry)
-            {
-                currentScore = cry.staminaToRecover;
-                if ((float)enemy.currentEmotionalStamina / enemy.maxEmotionalStamina < 0.4f) currentScore *= 3f; // High priority if low on stamina
-            }
-            else if (ability is ApplyStatusAbility status)
-            {
-                currentScore = 15; // Base score for applying a status
-                if (status.effectToApply is StunEffect || status.effectToApply is FiredEffect) currentScore = 50; // High priority for stuns
-                if (player.statusEffects.Exists(e => e.GetType() == status.effectToApply.GetType())) currentScore = 0; // No score if target already has it
-            }
-            else if (ability is MinivanBlockadeAbility blockade)
-            {
-                currentScore = blockade.armorAmount;
-                if (enemy.armor < 10) currentScore *= 1.5f; // Prioritize if armor is low
-            }
-            else if (ability is TraumaDumpAbility)
-            {
-                if (enemy.preparedArguments.Count < 2) currentScore = 20; // High priority if hand is empty
-                else currentScore = 5;
-            }
-
-            if (currentScore > bestScore)
-            {
-                bestScore = currentScore;
-                bestAbility = ability;
-            }
+            bestAbility = enemy.aiProfile.ChooseAbility(enemy, player, enemy.preparedArguments, enemyCooldowns);
+        }
+        else
+        {
+            Debug.LogWarning("Enemy has no AI Profile assigned!");
         }
 
         if (bestAbility != null)
         {
             ApplyReputationModifiers(bestAbility);
             TriggerMeterGains(enemy, bestAbility);
+            CheckEscalationRisk(enemy, bestAbility);
 
             if (bestAbility.cooldown > 0)
             {
@@ -323,6 +288,21 @@ public class Encounter : MonoBehaviour
         {
             enemyCooldowns.Clear();
             Debug.Log("Enemy cooldowns cleared!");
+        }
+    }
+
+    void CheckEscalationRisk(Combatant user, VerbalAbility ability)
+    {
+        if (ability.escalationRisk > 0)
+        {
+            if (Random.value < ability.escalationRisk)
+            {
+                Consequence consequence = consequenceList?.GetRandomConsequence();
+                if (consequence != null)
+                {
+                    consequence.Trigger(user);
+                }
+            }
         }
     }
 }

@@ -26,6 +26,7 @@ public class Workshop : MonoBehaviour
         if (PlayerProfile.s_instance.HasUpgrade(ability, upgrade))
         {
             Debug.Log($"Already purchased this upgrade for {ability.name}.");
+            Debug.Log($"Already purchased this upgrade for {ability.abilityName}.");
             return;
         }
 
@@ -35,6 +36,8 @@ public class Workshop : MonoBehaviour
             PlayerProfile.s_instance.PurchaseUpgrade(ability, upgrade);
 
             Debug.Log($"Successfully purchased upgrade '{upgrade.upgradeName}' for {ability.name}! " +
+            
+            Debug.Log($"Successfully purchased upgrade '{upgrade.upgradeName}' for {ability.abilityName}! " +
                       $"Remaining Insight: {CommuneManager.s_instance.insightResource}");
         }
         else

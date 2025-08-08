@@ -1,7 +1,13 @@
 using UnityEngine;
 
-public class Workshop : MonoBehaviour
+public class Workshop : Building
 {
+    private void Awake()
+    {
+        buildingName = "Workshop";
+        cost = 100; // Example cost
+    }
+
     public void UpgradeAbility(VerbalAbility ability)
     {
         if (ability == null) return;
@@ -17,7 +23,6 @@ public class Workshop : MonoBehaviour
             ability.isUpgraded = true;
             Debug.Log($"Successfully upgraded {ability.name}!");
             // A real implementation would need to save this change permanently,
-            // likely by modifying the ScriptableObject asset itself in the editor,
             // or by having a separate system to track upgrades.
             // For this prototype, we'll just set the flag at runtime.
         }

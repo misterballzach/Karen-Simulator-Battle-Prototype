@@ -1,12 +1,15 @@
 using UnityEngine;
 using System.Collections;
 
-public enum BattleState { Start, PlayerTurn, EnemyTurn, Won, Lost }
+public enum BattleState { Start, PlayerTurn, EnemyTurn, Won, Lost, Reward }
 
 public class BattleSystem : MonoBehaviour
 {
     public Entity player;
     public Entity enemy;
+
+    public CardHandUI playerHandUI;
+    // public CardRewardSystem cardRewardSystem; // To be added
 
     public BattleState state;
 
@@ -24,6 +27,7 @@ public class BattleSystem : MonoBehaviour
             player.DrawCard();
             enemy.DrawCard();
         }
+        playerHandUI.UpdateHandUI();
 
         yield return new WaitForSeconds(1f);
 
@@ -34,7 +38,24 @@ public class BattleSystem : MonoBehaviour
     void StartPlayerTurn()
     {
         player.OnTurnStart();
+        playerHandUI.UpdateHandUI();
         Debug.Log("Player's turn.");
+    }
+
+    public void OnCardPlayed(Card card, Entity target)
+    {
+        if (state != BattleState.PlayerTurn)
+            return;
+
+        if (player.PlayCard(card, target))
+        {
+            playerHandUI.UpdateHandUI();
+            StartCoroutine(EndPlayerTurn());
+        }
+        else
+        {
+            Debug.Log("Player failed to play card.");
+        }
     }
 
     public void OnEndTurnButton()
@@ -70,24 +91,61 @@ public class BattleSystem : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
-        // Simple AI: find the first playable card and play it
-        Card cardToPlay = null;
+        // Smarter AI logic
+        Card bestCardToPlay = null;
+        float bestScore = -1f;
+
         foreach (Card card in enemy.hand)
         {
-            if (enemy.currentMana >= card.cost)
+            if (enemy.currentMana < card.cost)
             {
-                cardToPlay = card;
-                break;
+                continue; // Skip card if not enough mana
+            }
+
+            float currentScore = 0f;
+
+            if (card is DamageDealCard damageCard)
+            {
+                currentScore = damageCard.damageAmount;
+                if (player.elementalWeaknesses.Contains(damageCard.element)) currentScore *= 2f;
+                if (player.elementalResistances.Contains(damageCard.element)) currentScore *= 0.5f;
+                if (damageCard.damageAmount >= player.currentHealth) currentScore += 1000;
+            }
+            else if (card is HealingCard healingCard)
+            {
+                currentScore = healingCard.healAmount;
+                if ((float)enemy.currentHealth / enemy.maxHealth < 0.5f) currentScore *= 2f;
+            }
+            else if (card is StatusEffectCard statusCard && statusCard.effectToApply.type == StatusEffectType.Debuff)
+            {
+                bool alreadyHasEffect = player.statusEffects.Exists(e => e.GetType() == statusCard.effectToApply.GetType());
+                if (!alreadyHasEffect) currentScore = 10;
+            }
+            else if (card is DrawCardCard)
+            {
+                currentScore = 1;
+            }
+
+            if (currentScore > bestScore)
+            {
+                bestScore = currentScore;
+                bestCardToPlay = card;
             }
         }
 
-        if (cardToPlay != null)
+        if (bestCardToPlay != null)
         {
-            enemy.PlayCard(cardToPlay, player);
+            Entity target = player; // Default target
+            if (bestCardToPlay is HealingCard || bestCardToPlay is DrawCardCard || (bestCardToPlay is StatusEffectCard seCard && seCard.effectToApply.type == StatusEffectType.Buff))
+            {
+                target = enemy;
+            }
+            enemy.PlayCard(bestCardToPlay, target);
+            Debug.Log($"Enemy chose to play {bestCardToPlay.name} with a score of {bestScore}.");
         }
         else
         {
-            Debug.Log("Enemy has no playable cards.");
+            Debug.Log("Enemy has no good plays, ending turn.");
         }
 
         yield return new WaitForSeconds(1f);
@@ -111,6 +169,12 @@ public class BattleSystem : MonoBehaviour
         if (state == BattleState.Won)
         {
             Debug.Log("You won the battle!");
+            player.GainXP(50); // Award XP
+
+            // Start Reward Phase
+            state = BattleState.Reward;
+            // cardRewardSystem.ShowRewardScreen(); // This would be called here
+            Debug.Log("Starting reward phase...");
         }
         else if (state == BattleState.Lost)
         {

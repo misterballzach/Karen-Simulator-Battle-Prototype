@@ -9,7 +9,7 @@ public class Card : ScriptableObject
     public int cost;
     public Element element;
 
-    public virtual void Use(Entity target)
+    public virtual void Use(Entity user, Entity target)
     {
         // This method will be overridden by specific card types
     }

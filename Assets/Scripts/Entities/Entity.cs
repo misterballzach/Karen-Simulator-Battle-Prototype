@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 public class Entity : MonoBehaviour
 {
+    [Header("Stats")]
+    public int level = 1;
+    public int experiencePoints = 0;
+    public int xpToNextLevel = 100;
     public int maxHealth = 100;
     public int currentHealth;
     public int maxMana = 100;
@@ -94,7 +98,7 @@ public class Entity : MonoBehaviour
         if (hand.Contains(card) && currentMana >= card.cost)
         {
             currentMana -= card.cost;
-            card.Use(target);
+            card.Use(this, target);
             hand.Remove(card);
             discardPile.Add(card);
             Debug.Log($"{name} played {card.name} for {card.cost} mana.");
@@ -157,5 +161,29 @@ public class Entity : MonoBehaviour
             effect.Remove();
             statusEffects.Remove(effect);
         }
+    }
+
+    public void GainXP(int amount)
+    {
+        experiencePoints += amount;
+        Debug.Log($"{name} gained {amount} XP!");
+        if (experiencePoints >= xpToNextLevel)
+        {
+            LevelUp();
+        }
+    }
+
+    private void LevelUp()
+    {
+        level++;
+        experiencePoints -= xpToNextLevel;
+        xpToNextLevel = Mathf.RoundToInt(xpToNextLevel * 1.5f);
+
+        maxHealth += 10;
+        maxMana += 5;
+        currentHealth = maxHealth;
+        currentMana = maxMana;
+
+        Debug.Log($"{name} leveled up to level {level}!");
     }
 }

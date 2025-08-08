@@ -5,7 +5,7 @@ public class DamageDealCard : Card
 {
     public int damageAmount;
 
-    public override void Use(Entity target)
+    public override void Use(Entity user, Entity target)
     {
         if (target != null)
         {

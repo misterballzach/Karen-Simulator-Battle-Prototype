@@ -130,18 +130,21 @@ public class Encounter : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
-        VerbalAbility bestAbility = null;
+        Tuple<VerbalAbility, Combatant> aiChoice = null;
         if (enemy.aiProfile != null)
         {
-            bestAbility = enemy.aiProfile.ChooseAbility(enemy, player, enemy.preparedArguments, enemyCooldowns);
+            aiChoice = enemy.aiProfile.ChooseAbility(enemy, player, enemy.preparedArguments, enemyCooldowns);
         }
         else
         {
             Debug.LogWarning("Enemy has no AI Profile assigned!");
         }
 
-        if (bestAbility != null)
+        if (aiChoice != null && aiChoice.Item1 != null)
         {
+            VerbalAbility bestAbility = aiChoice.Item1;
+            Combatant target = aiChoice.Item2;
+
             ApplyReputationModifiers(bestAbility);
             TriggerMeterGains(enemy, bestAbility);
             CheckEscalationRisk(enemy, bestAbility);
@@ -150,10 +153,9 @@ public class Encounter : MonoBehaviour
             {
                 enemyCooldowns[bestAbility] = bestAbility.cooldown;
             }
-            Combatant target = player;
-            // Targeting logic would go here
+
             enemy.UseAbility(bestAbility, target);
-            Debug.Log($"Enemy chose to use {bestAbility.name}.");
+            Debug.Log($"Enemy chose to use {bestAbility.name} on {target.name}.");
         }
         else
         {
@@ -210,6 +212,11 @@ public class Encounter : MonoBehaviour
             if (wasLiberated)
             {
                 CommuneManager.s_instance?.AddNewMember(enemy);
+                ReputationManager.s_instance?.AddReputation(enemy.faction, 5); // Small bonus for liberating
+            }
+            else
+            {
+                ReputationManager.s_instance?.AddReputation(enemy.faction, -10); // Penalty for dominating
             }
 
             int xpGained = 50;
@@ -219,9 +226,6 @@ public class Encounter : MonoBehaviour
                 xpGained *= 2;
             }
             player.GainXP(xpGained);
-
-            // Simple reputation change for winning
-            ReputationManager.s_instance?.AddReputation(enemy.faction, -10);
 
             state = EncounterState.Reward;
             Debug.Log("Starting reward phase...");

@@ -6,7 +6,7 @@ public class ApplyStatusAbility : VerbalAbility
     [SerializeReference]
     public StatusEffect effectToApply;
 
-    public void Use(Combatant user, Combatant target)
+    public override void Use(Combatant user, Combatant target)
     {
         if (target != null && effectToApply != null)
         {

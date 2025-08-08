@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Weaponize Victimhood", menuName = "KAREN/Abilities/Weaponize Victimhood")]
 public class WeaponizeVictimhoodAbility : VerbalAbility
 {
-    public void Use(Combatant user, Combatant target)
+    public override void Use(Combatant user, Combatant target)
     {
         if (user != null && target != null)
         {

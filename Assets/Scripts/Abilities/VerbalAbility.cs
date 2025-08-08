@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 [CreateAssetMenu(fileName = "New Verbal Ability", menuName = "KAREN/Verbal Ability")]
-public class VerbalAbility : ScriptableObject
+public abstract class VerbalAbility : ScriptableObject
 {
     [Header("Display Info")]
     public new string name;
@@ -19,9 +19,12 @@ public class VerbalAbility : ScriptableObject
 
     [Header("Reputation")]
     public List<ReputationModifier> reputationModifiers;
+
     [Header("Upgrades")]
     public bool isUpgraded = false;
     public int upgradeCost = 50; // Insight cost
     [TextArea]
     public string upgradedDescription;
+
+    public abstract void Use(Combatant user, Combatant target);
 }

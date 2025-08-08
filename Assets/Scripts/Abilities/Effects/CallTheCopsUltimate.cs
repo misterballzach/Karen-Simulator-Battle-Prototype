@@ -10,7 +10,7 @@ public class CallTheCopsUltimate : VerbalAbility
         // This ability uses the PassiveAggressiveMeter instead
     }
 
-    public void Use(Combatant user, Combatant target)
+    public override void Use(Combatant user, Combatant target)
     {
         if (target != null)
         {

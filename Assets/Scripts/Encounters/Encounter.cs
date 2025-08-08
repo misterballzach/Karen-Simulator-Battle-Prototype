@@ -102,8 +102,6 @@ public class Encounter : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         if (enemy.currentEmotionalStamina <= 0 || enemy.insight >= enemy.maxInsight)
-
-        if (enemy.currentEmotionalStamina <= 0)
         {
             state = EncounterState.Won;
             EndEncounter();
@@ -141,9 +139,35 @@ public class Encounter : MonoBehaviour
             if (enemy.currentCredibility < finalCost) continue;
 
             float currentScore = 0f;
-            // This AI logic needs to be updated with the new ability subclasses
-            // For now, it will just play the first possible card.
-            currentScore = 1;
+
+            // --- AI Scoring Logic ---
+            if (ability is DemandRefundAbility demand)
+            {
+                currentScore = demand.emotionalDamage * 1.5f; // Prioritize damage
+                if (player.rhetoricalWeaknesses.Contains(ability.rhetoricalClass)) currentScore *= 2f;
+                if (demand.emotionalDamage >= player.currentEmotionalStamina) currentScore += 1000; // Lethal is high priority
+            }
+            else if (ability is FakeCryAbility cry)
+            {
+                currentScore = cry.staminaToRecover;
+                if ((float)enemy.currentEmotionalStamina / enemy.maxEmotionalStamina < 0.4f) currentScore *= 3f; // High priority if low on stamina
+            }
+            else if (ability is ApplyStatusAbility status)
+            {
+                currentScore = 15; // Base score for applying a status
+                if (status.effectToApply is StunEffect || status.effectToApply is FiredEffect) currentScore = 50; // High priority for stuns
+                if (player.statusEffects.Exists(e => e.GetType() == status.effectToApply.GetType())) currentScore = 0; // No score if target already has it
+            }
+            else if (ability is MinivanBlockadeAbility blockade)
+            {
+                currentScore = blockade.armorAmount;
+                if (enemy.armor < 10) currentScore *= 1.5f; // Prioritize if armor is low
+            }
+            else if (ability is TraumaDumpAbility)
+            {
+                if (enemy.preparedArguments.Count < 2) currentScore = 20; // High priority if hand is empty
+                else currentScore = 5;
+            }
 
             if (currentScore > bestScore)
             {
@@ -156,7 +180,6 @@ public class Encounter : MonoBehaviour
         {
             ApplyReputationModifiers(bestAbility);
             TriggerMeterGains(enemy, bestAbility);
-
 
             if (bestAbility.cooldown > 0)
             {
@@ -177,7 +200,6 @@ public class Encounter : MonoBehaviour
         enemy.OnTurnEnd();
 
         if (player.currentEmotionalStamina <= 0 || player.insight >= player.maxInsight)
-        if (player.currentEmotionalStamina <= 0)
         {
             state = EncounterState.Lost;
             EndEncounter();
@@ -225,8 +247,6 @@ public class Encounter : MonoBehaviour
                 CommuneManager.s_instance?.AddNewMember(enemy);
             }
 
-            Debug.Log("You won the argument!");
-
             int xpGained = 50;
             if (isViral)
             {
@@ -243,7 +263,6 @@ public class Encounter : MonoBehaviour
         }
         else if (state == EncounterState.Lost)
         {
-
             string loseMessage = player.insight >= player.maxInsight ? "You had an emotional breakthrough and lost the argument." : "You had a breakdown.";
             Debug.Log(loseMessage);
         }
@@ -262,9 +281,6 @@ public class Encounter : MonoBehaviour
             case RhetoricalClass.Vulnerability:
                 user.GainInsight(amount);
                 break;
-
-            Debug.Log("You had a breakdown.");
-
         }
     }
 

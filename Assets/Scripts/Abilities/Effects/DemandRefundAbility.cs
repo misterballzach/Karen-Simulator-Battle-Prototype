@@ -1,0 +1,17 @@
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "Demand Refund", menuName = "KAREN/Abilities/Demand Refund")]
+public class DemandRefundAbility : VerbalAbility
+{
+    public int emotionalDamage;
+
+    public void Use(Combatant user, Combatant target)
+    {
+        if (target != null)
+        {
+            int modifiedDamage = Mathf.RoundToInt(emotionalDamage * user.outgoingDamageModifier);
+            target.TakeEmotionalDamage(modifiedDamage, this.rhetoricalClass);
+            Debug.Log($"{user.name} used {this.name}, dealing {modifiedDamage} emotional damage to {target.name}.");
+        }
+    }
+}

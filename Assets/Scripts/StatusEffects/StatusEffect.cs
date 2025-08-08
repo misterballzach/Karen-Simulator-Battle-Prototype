@@ -10,13 +10,14 @@ public enum StatusEffectType
 public class StatusEffect
 {
     public string name;
+    [TextArea]
     public string description;
     public int duration; // in turns
     public StatusEffectType type;
 
-    protected Entity owner;
+    protected Combatant owner;
 
-    public virtual void Apply(Entity target)
+    public virtual void Apply(Combatant target)
     {
         this.owner = target;
     }

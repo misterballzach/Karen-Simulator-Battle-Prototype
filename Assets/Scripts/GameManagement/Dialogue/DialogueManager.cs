@@ -43,25 +43,41 @@ public class DialogueManager : MonoBehaviour
         speakerNameText.text = node.speakerName;
         dialogueText.text = node.dialogueText;
 
-        // Clear old choices
         foreach (var button in currentChoiceButtons)
         {
             Destroy(button);
         }
         currentChoiceButtons.Clear();
 
-        // Create new choices if they exist
         if (node.choices != null && node.choices.Count > 0)
         {
             foreach (Choice choice in node.choices)
             {
-                GameObject choiceButtonObj = Instantiate(choiceButtonPrefab, choicesContainer);
-                choiceButtonObj.GetComponentInChildren<Text>().text = choice.choiceText;
-                choiceButtonObj.GetComponent<Button>().onClick.AddListener(() => ChooseOption(choice));
-                currentChoiceButtons.Add(choiceButtonObj);
+                if (CheckRequirements(choice))
+                {
+                    GameObject choiceButtonObj = Instantiate(choiceButtonPrefab, choicesContainer);
+                    choiceButtonObj.GetComponentInChildren<Text>().text = choice.choiceText;
+                    choiceButtonObj.GetComponent<Button>().onClick.AddListener(() => ChooseOption(choice));
+                    currentChoiceButtons.Add(choiceButtonObj);
+                }
             }
         }
-        // If no choices, the dialogue might end or continue linearly after a click
+    }
+
+    private bool CheckRequirements(Choice choice)
+    {
+        if (choice.requirements == null) return true;
+        if (ReputationManager.s_instance == null) return true; // No manager, no checks
+
+        foreach (var req in choice.requirements)
+        {
+            int currentRep = ReputationManager.s_instance.GetReputation(req.faction);
+            if (currentRep < req.minValue || currentRep > req.maxValue)
+            {
+                return false; // Requirement not met
+            }
+        }
+        return true;
     }
 
     public void ChooseOption(Choice choice)
@@ -81,6 +97,5 @@ public class DialogueManager : MonoBehaviour
         dialoguePanel.SetActive(false);
         currentNode = null;
         Debug.Log("Dialogue ended.");
-        // Potentially notify other systems that dialogue is over
     }
 }

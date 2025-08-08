@@ -6,6 +6,7 @@ public class Combatant : MonoBehaviour
     [Header("Identity")]
     public Faction faction;
     public KarenClass karenClass;
+    public AIProfile aiProfile;
 
     [Header("Stats")]
     public int level = 1;
@@ -95,38 +96,66 @@ public class Combatant : MonoBehaviour
     {
         if (!preparedArguments.Contains(ability)) return false;
 
-        // Check for status effects that prevent ability use
-        if (statusEffects.Exists(e => e is ExposedEffect) && (ability.rhetoricalClass == RhetoricalClass.Manipulation || ability.rhetoricalClass == RhetoricalClass.Delusion))
+        // --- Create a temporary, modified instance of the ability ---
+        VerbalAbility modifiedAbility = Instantiate(ability); // Creates a runtime copy
+
+        // Apply upgrades from PlayerProfile
+        if (PlayerProfile.s_instance != null && PlayerProfile.s_instance.purchasedUpgrades.ContainsKey(ability))
         {
-            Debug.Log($"Cannot use {ability.rhetoricalClass} abilities while Exposed!");
+            foreach (var upgrade in PlayerProfile.s_instance.purchasedUpgrades[ability])
+            {
+                // This is a simplified application logic. A real game might need a more robust system.
+                switch (upgrade.type)
+                {
+                    case AbilityUpgrade.UpgradeType.ReduceCost:
+                        modifiedAbility.cost -= upgrade.value;
+                        break;
+                    // Note: Modifying damage/healing would require changing the ability subclasses
+                    // to have their damage/heal amounts in variables that can be modified.
+                    // This is a larger refactor I will skip for now to keep this step manageable.
+                }
+            }
+        }
+
+        // --- Check for status effects that prevent ability use ---
+        if (statusEffects.Exists(e => e is ExposedEffect) && (modifiedAbility.rhetoricalClass == RhetoricalClass.Manipulation || modifiedAbility.rhetoricalClass == RhetoricalClass.Delusion))
+        {
+            Debug.Log($"Cannot use {modifiedAbility.rhetoricalClass} abilities while Exposed!");
+            Destroy(modifiedAbility); // Clean up the temporary instance
             return false;
         }
-        if (statusEffects.Exists(e => e is CancelledEffect) && ability.rhetoricalClass == RhetoricalClass.Aggression)
+        if (statusEffects.Exists(e => e is CancelledEffect) && modifiedAbility.rhetoricalClass == RhetoricalClass.Aggression)
         {
-            Debug.Log($"Cannot use {ability.rhetoricalClass} abilities while Cancelled!");
+            Debug.Log($"Cannot use {modifiedAbility.rhetoricalClass} abilities while Cancelled!");
+            Destroy(modifiedAbility); // Clean up
             return false;
         }
 
-        int finalCost = Mathf.Max(0, ability.cost + credibilityCostModifier);
+        // --- Check costs ---
+        int finalCost = Mathf.Max(0, modifiedAbility.cost + credibilityCostModifier);
 
-        if (ability is CallTheCopsUltimate)
+        if (modifiedAbility is CallTheCopsUltimate)
         {
-            if (entitlement < maxEntitlement) return false;
+            if (entitlement < maxEntitlement) { Destroy(modifiedAbility); return false; }
             entitlement = 0;
         }
         else if (currentCredibility < finalCost)
         {
+            Destroy(modifiedAbility);
             return false;
         }
 
-        if (!(ability is CallTheCopsUltimate))
+        // --- Pay costs and execute ---
+        if (!(modifiedAbility is CallTheCopsUltimate))
         {
             currentCredibility -= finalCost;
         }
 
-        ability.Use(this, target);
-        preparedArguments.Remove(ability);
-        usedArguments.Add(ability);
+        modifiedAbility.Use(this, target);
+        preparedArguments.Remove(ability); // Remove the original card
+        usedArguments.Add(ability); // Add the original card to discard
+
+        Destroy(modifiedAbility); // Clean up the temporary instance
         return true;
     }
 
@@ -200,33 +229,22 @@ public class Combatant : MonoBehaviour
         experiencePoints -= xpToNextLevel;
         xpToNextLevel = Mathf.RoundToInt(xpToNextLevel * 1.5f);
 
-        // Base stat increases
         maxEmotionalStamina += 10;
         maxCredibility += 5;
-
-        // Apply class-specific bonuses
         ApplyClassBonuses();
-
         currentEmotionalStamina = maxEmotionalStamina;
         currentCredibility = maxCredibility;
     }
 
     private void ApplyClassBonuses()
     {
-        // Placeholder for class-specific level up bonuses
         switch (karenClass)
         {
             case KarenClass.ClassicKaren:
-                maxEntitlement -= 5; // Gets angry faster
+                maxEntitlement -= 5;
                 break;
             case KarenClass.WellnessWitch:
                 incomingHealingModifier += 0.1f;
-                break;
-            case KarenClass.KarenNouveau:
-                // Would have logic related to Online Reputation
-                break;
-            case KarenClass.RepentantKaren:
-                // Would have logic related to redemption
                 break;
         }
     }
@@ -234,10 +252,7 @@ public class Combatant : MonoBehaviour
     public void GainEntitlement(int amount)
     {
         if (statusEffects.Exists(e => e is CodeBlondeEffect)) return;
-
         entitlement += amount;
-        Debug.Log($"{name} gained {amount} Entitlement, now has {entitlement}.");
-
         if (entitlement >= maxEntitlement)
         {
             entitlement = 0;
@@ -248,13 +263,9 @@ public class Combatant : MonoBehaviour
     public void GainInsight(int amount)
     {
         insight += amount;
-        Debug.Log($"{name} gained {amount} Insight, now has {insight}.");
-
         if (insight >= maxInsight)
         {
-            // Trigger Emotional Breakthrough
-            Debug.Log($"{name} has had an Emotional Breakthrough!");
-            // This will be a win condition handled by the Encounter
+            // This is a win condition handled by the Encounter
         }
     }
 }

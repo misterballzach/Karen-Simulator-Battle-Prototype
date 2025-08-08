@@ -9,8 +9,9 @@ public class DamageDealCard : Card
     {
         if (target != null)
         {
-            target.TakeDamage(damageAmount, this.element);
-            Debug.Log($"{this.name} dealt {damageAmount} {this.element.ToString()} damage to {target.name}.");
+            int modifiedDamage = Mathf.RoundToInt(damageAmount * user.outgoingDamageModifier);
+            target.TakeDamage(modifiedDamage, this.element);
+            Debug.Log($"{user.name} used {this.name}, dealing {modifiedDamage} {this.element.ToString()} damage to {target.name}.");
         }
     }
 }

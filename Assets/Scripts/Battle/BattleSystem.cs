@@ -7,6 +7,7 @@ public class BattleSystem : MonoBehaviour
 {
     public Entity player;
     public Entity enemy;
+    public Location currentLocation;
 
     public CardHandUI playerHandUI;
     // public CardRewardSystem cardRewardSystem; // To be added
@@ -21,6 +22,15 @@ public class BattleSystem : MonoBehaviour
 
     IEnumerator SetupBattle()
     {
+        ApplyLocationEffect();
+
+        // Load player's deck from profile
+        if (PlayerProfile.s_instance != null)
+        {
+            player.deck = new List<Card>(PlayerProfile.s_instance.currentDeck);
+            player.ShuffleDeck();
+        }
+
         // Draw initial hands
         for(int i = 0; i < 3; i++)
         {
@@ -38,6 +48,11 @@ public class BattleSystem : MonoBehaviour
     void StartPlayerTurn()
     {
         player.OnTurnStart();
+        if (!player.CanTakeTurn())
+        {
+            StartCoroutine(EndPlayerTurn());
+            return;
+        }
         playerHandUI.UpdateHandUI();
         Debug.Log("Player's turn.");
     }
@@ -87,6 +102,13 @@ public class BattleSystem : MonoBehaviour
     IEnumerator EnemyTurn()
     {
         enemy.OnTurnStart();
+        if (!enemy.CanTakeTurn())
+        {
+            enemy.OnTurnEnd();
+            if (player.currentHealth <= 0) { state = BattleState.Lost; EndBattle(); }
+            else { state = BattleState.PlayerTurn; StartPlayerTurn(); }
+            yield break;
+        }
         Debug.Log("Enemy's turn.");
 
         yield return new WaitForSeconds(1f);
@@ -161,6 +183,24 @@ public class BattleSystem : MonoBehaviour
         {
             state = BattleState.PlayerTurn;
             StartPlayerTurn();
+        }
+    }
+
+    void ApplyLocationEffect()
+    {
+        if (currentLocation == null) return;
+
+        Debug.Log($"Battle takes place at: {currentLocation.locationName}. Applying location effects.");
+        switch (currentLocation.effectType)
+        {
+            case LocationEffectType.ManaCostModification:
+                player.manaCostModifier += currentLocation.effectValue;
+                enemy.manaCostModifier += currentLocation.effectValue;
+                break;
+            case LocationEffectType.StartingArmor:
+                player.armor += currentLocation.effectValue;
+                enemy.armor += currentLocation.effectValue;
+                break;
         }
     }
 

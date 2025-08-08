@@ -5,7 +5,7 @@ public class DemandRefundAbility : VerbalAbility
 {
     public int emotionalDamage;
 
-    public void Use(Combatant user, Combatant target)
+    public override void Use(Combatant user, Combatant target)
     {
         if (target != null)
         {

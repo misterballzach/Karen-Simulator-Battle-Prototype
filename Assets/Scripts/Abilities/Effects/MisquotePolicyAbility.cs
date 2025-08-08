@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Misquote Policy", menuName = "KAREN/Abilities/Misquote Policy")]
 public class MisquotePolicyAbility : VerbalAbility
 {
-    public void Use(Combatant user, Combatant target)
+    public override void Use(Combatant user, Combatant target)
     {
         if (target != null)
         {

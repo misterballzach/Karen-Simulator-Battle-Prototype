@@ -5,7 +5,7 @@ public class FakeCryAbility : VerbalAbility
 {
     public int staminaToRecover;
 
-    public void Use(Combatant user, Combatant target)
+    public override void Use(Combatant user, Combatant target)
     {
         // This ability should target the user
         if (user != null)

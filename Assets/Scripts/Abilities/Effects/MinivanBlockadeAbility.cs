@@ -5,7 +5,7 @@ public class MinivanBlockadeAbility : VerbalAbility
 {
     public int armorAmount;
 
-    public void Use(Combatant user, Combatant target)
+    public override void Use(Combatant user, Combatant target)
     {
         if (user != null)
         {

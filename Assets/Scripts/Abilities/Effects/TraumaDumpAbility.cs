@@ -5,7 +5,7 @@ public class TraumaDumpAbility : VerbalAbility
 {
     public int argumentsToPrepare;
 
-    public void Use(Combatant user, Combatant target)
+    public override void Use(Combatant user, Combatant target)
     {
         if (user != null)
         {

@@ -75,6 +75,8 @@ public class Encounter : MonoBehaviour
         if (player.UseAbility(ability, target))
         {
             ApplyReputationModifiers(ability);
+            TriggerMeterGains(player, ability);
+
             if (ability.cooldown > 0)
             {
                 playerCooldowns[ability] = ability.cooldown;
@@ -99,7 +101,7 @@ public class Encounter : MonoBehaviour
         player.OnTurnEnd();
         yield return new WaitForSeconds(1f);
 
-        if (enemy.currentEmotionalStamina <= 0)
+        if (enemy.currentEmotionalStamina <= 0 || enemy.insight >= enemy.maxInsight)
         {
             state = EncounterState.Won;
             EndEncounter();
@@ -151,6 +153,8 @@ public class Encounter : MonoBehaviour
         if (bestAbility != null)
         {
             ApplyReputationModifiers(bestAbility);
+            TriggerMeterGains(enemy, bestAbility);
+
             if (bestAbility.cooldown > 0)
             {
                 enemyCooldowns[bestAbility] = bestAbility.cooldown;
@@ -169,7 +173,7 @@ public class Encounter : MonoBehaviour
 
         enemy.OnTurnEnd();
 
-        if (player.currentEmotionalStamina <= 0)
+        if (player.currentEmotionalStamina <= 0 || player.insight >= player.maxInsight)
         {
             state = EncounterState.Lost;
             EndEncounter();
@@ -208,7 +212,15 @@ public class Encounter : MonoBehaviour
 
         if (state == EncounterState.Won)
         {
-            Debug.Log("You won the argument!");
+            bool wasLiberated = enemy.insight >= enemy.maxInsight;
+            string winMessage = wasLiberated ? "You've liberated them with a stunning emotional breakthrough!" : "You won the argument!";
+            Debug.Log(winMessage);
+
+            if (wasLiberated)
+            {
+                CommuneManager.s_instance?.AddNewMember(enemy);
+            }
+
             int xpGained = 50;
             if (isViral)
             {
@@ -225,7 +237,24 @@ public class Encounter : MonoBehaviour
         }
         else if (state == EncounterState.Lost)
         {
-            Debug.Log("You had a breakdown.");
+            string loseMessage = player.insight >= player.maxInsight ? "You had an emotional breakthrough and lost the argument." : "You had a breakdown.";
+            Debug.Log(loseMessage);
+        }
+    }
+
+    void TriggerMeterGains(Combatant user, VerbalAbility ability)
+    {
+        int amount = 10; // Default amount
+        switch (ability.rhetoricalClass)
+        {
+            case RhetoricalClass.Aggression:
+            case RhetoricalClass.Manipulation:
+            case RhetoricalClass.Delusion:
+                user.GainEntitlement(amount);
+                break;
+            case RhetoricalClass.Vulnerability:
+                user.GainInsight(amount);
+                break;
         }
     }
 

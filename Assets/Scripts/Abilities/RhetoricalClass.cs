@@ -3,5 +3,6 @@ public enum RhetoricalClass
     Neutral,
     Aggression,
     Manipulation,
-    Delusion
+    Delusion,
+    Vulnerability
 }

@@ -5,4 +5,5 @@ public enum RhetoricalClass
     Manipulation,
     Delusion,
     Vulnerability
+    Delusion
 }

@@ -102,6 +102,8 @@ public class Encounter : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         if (enemy.currentEmotionalStamina <= 0 || enemy.insight >= enemy.maxInsight)
+
+        if (enemy.currentEmotionalStamina <= 0)
         {
             state = EncounterState.Won;
             EndEncounter();
@@ -155,6 +157,7 @@ public class Encounter : MonoBehaviour
             ApplyReputationModifiers(bestAbility);
             TriggerMeterGains(enemy, bestAbility);
 
+
             if (bestAbility.cooldown > 0)
             {
                 enemyCooldowns[bestAbility] = bestAbility.cooldown;
@@ -174,6 +177,7 @@ public class Encounter : MonoBehaviour
         enemy.OnTurnEnd();
 
         if (player.currentEmotionalStamina <= 0 || player.insight >= player.maxInsight)
+        if (player.currentEmotionalStamina <= 0)
         {
             state = EncounterState.Lost;
             EndEncounter();
@@ -221,6 +225,8 @@ public class Encounter : MonoBehaviour
                 CommuneManager.s_instance?.AddNewMember(enemy);
             }
 
+            Debug.Log("You won the argument!");
+
             int xpGained = 50;
             if (isViral)
             {
@@ -237,6 +243,7 @@ public class Encounter : MonoBehaviour
         }
         else if (state == EncounterState.Lost)
         {
+
             string loseMessage = player.insight >= player.maxInsight ? "You had an emotional breakthrough and lost the argument." : "You had a breakdown.";
             Debug.Log(loseMessage);
         }
@@ -255,6 +262,9 @@ public class Encounter : MonoBehaviour
             case RhetoricalClass.Vulnerability:
                 user.GainInsight(amount);
                 break;
+
+            Debug.Log("You had a breakdown.");
+
         }
     }
 

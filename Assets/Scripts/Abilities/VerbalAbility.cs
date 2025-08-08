@@ -19,7 +19,6 @@ public class VerbalAbility : ScriptableObject
 
     [Header("Reputation")]
     public List<ReputationModifier> reputationModifiers;
-
     [Header("Upgrades")]
     public bool isUpgraded = false;
     public int upgradeCost = 50; // Insight cost

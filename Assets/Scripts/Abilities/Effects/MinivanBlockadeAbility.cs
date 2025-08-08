@@ -1,11 +1,11 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Minivan Blockade Card", menuName = "Cards/Minivan Blockade Card")]
-public class MinivanBlockadeCard : Card
+[CreateAssetMenu(fileName = "Minivan Blockade", menuName = "KAREN/Abilities/Minivan Blockade")]
+public class MinivanBlockadeAbility : VerbalAbility
 {
     public int armorAmount;
 
-    public override void Use(Entity user, Entity target)
+    public void Use(Combatant user, Combatant target)
     {
         if (user != null)
         {

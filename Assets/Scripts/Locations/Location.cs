@@ -1,15 +1,12 @@
 using UnityEngine;
+using System.Collections.Generic;
 
-public enum LocationEffectType { None, ManaCostModification, StartingArmor }
-
-[CreateAssetMenu(fileName = "New Location", menuName = "Locations/Location")]
+[CreateAssetMenu(fileName = "New Location", menuName = "KAREN/Location")]
 public class Location : ScriptableObject
 {
     public string locationName;
     [TextArea]
     public string description;
 
-    [Header("Location Effect")]
-    public LocationEffectType effectType;
-    public int effectValue;
+    public List<LocationEffect> locationEffects;
 }

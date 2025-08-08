@@ -12,9 +12,6 @@ public class CommuneManager : MonoBehaviour
     [Header("Members")]
     public List<LiberatedKaren> members = new List<LiberatedKaren>();
 
-    [Header("Buildings")]
-    public List<Building> buildings = new List<Building>();
-
     private void Awake()
     {
         if (s_instance == null)
@@ -33,14 +30,5 @@ public class CommuneManager : MonoBehaviour
         LiberatedKaren newMember = new LiberatedKaren(liberatedCombatant.name, liberatedCombatant.karenClass);
         members.Add(newMember);
         Debug.Log($"{liberatedCombatant.name} has joined the commune!");
-    }
-
-    public void AddBuilding(Building newBuilding)
-    {
-        if (newBuilding != null)
-        {
-            buildings.Add(newBuilding);
-            Debug.Log($"A new {newBuilding.buildingName} has been added to the commune.");
-        }
     }
 }

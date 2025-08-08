@@ -16,9 +16,13 @@ public class Combatant : MonoBehaviour
     public int maxCredibility = 100;
     public int currentCredibility;
     public int armor = 0;
+    [Header("Dual-Axis Meters")]
+    public int entitlement = 0;
+    public int maxEntitlement = 100;
+    public int insight = 0;
+    public int maxInsight = 100;
     public int passiveAggressiveMeter = 0;
     public int maxPassiveAggressive = 100;
-
     [Header("Modifiers")]
     public float outgoingDamageModifier = 1f;
     public float incomingDamageModifier = 1f;
@@ -54,6 +58,7 @@ public class Combatant : MonoBehaviour
         int damageToHealth = totalDamage - damageToArmor;
 
         currentEmotionalStamina -= damageToHealth;
+        // GainPassiveAggression(totalDamage); // This is now triggered by card use
         GainPassiveAggression(totalDamage);
 
         if (currentEmotionalStamina < 0) currentEmotionalStamina = 0;
@@ -108,6 +113,8 @@ public class Combatant : MonoBehaviour
 
         if (ability is CallTheCopsUltimate)
         {
+            if (entitlement < maxEntitlement) return false;
+            entitlement = 0;
             if (passiveAggressiveMeter < maxPassiveAggressive) return false;
             passiveAggressiveMeter = 0;
         }
@@ -214,7 +221,9 @@ public class Combatant : MonoBehaviour
         switch (karenClass)
         {
             case KarenClass.ClassicKaren:
-                maxPassiveAggressive -= 5; // Gets angry faster
+
+                maxEntitlement -= 5; // Gets angry faster
+
                 break;
             case KarenClass.WellnessWitch:
                 incomingHealingModifier += 0.1f;
@@ -228,6 +237,32 @@ public class Combatant : MonoBehaviour
         }
     }
 
+    public void GainEntitlement(int amount)
+    {
+        if (statusEffects.Exists(e => e is CodeBlondeEffect)) return;
+
+        entitlement += amount;
+        Debug.Log($"{name} gained {amount} Entitlement, now has {entitlement}.");
+
+        if (entitlement >= maxEntitlement)
+        {
+            entitlement = 0;
+            AddStatusEffect(new CodeBlondeEffect());
+        }
+    }
+
+    public void GainInsight(int amount)
+    {
+        insight += amount;
+        Debug.Log($"{name} gained {amount} Insight, now has {insight}.");
+
+        if (insight >= maxInsight)
+        {
+            // Trigger Emotional Breakthrough
+            Debug.Log($"{name} has had an Emotional Breakthrough!");
+            // This will be a win condition handled by the Encounter
+        }
+    }
     public void GainPassiveAggression(int amount)
     {
         if (statusEffects.Exists(e => e is CodeBlondeEffect)) return; // Can't gain PA while in Code Blonde

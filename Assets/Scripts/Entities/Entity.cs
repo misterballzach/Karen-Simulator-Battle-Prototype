@@ -11,6 +11,15 @@ public class Entity : MonoBehaviour
     public int currentHealth;
     public int maxMana = 100;
     public int currentMana;
+    public int armor = 0;
+    public int escalation = 0;
+    public int maxEscalation = 100;
+
+    [Header("Modifiers")]
+    public float outgoingDamageModifier = 1f;
+    public float incomingDamageModifier = 1f;
+    public float incomingHealingModifier = 1f;
+    public int manaCostModifier = 0;
 
     public List<Card> deck = new List<Card>();
     public List<Card> hand = new List<Card>();
@@ -35,36 +44,43 @@ public class Entity : MonoBehaviour
 
     public void TakeDamage(int amount, Element element)
     {
-        float damageMultiplier = 1f;
+        float elementalMultiplier = 1f;
         if (elementalWeaknesses.Contains(element))
         {
-            damageMultiplier = 2f;
+            elementalMultiplier = 2f;
             Debug.Log($"{name} is weak to {element}!");
         }
         else if (elementalResistances.Contains(element))
         {
-            damageMultiplier = 0.5f;
+            elementalMultiplier = 0.5f;
             Debug.Log($"{name} is resistant to {element}!");
         }
 
-        int totalDamage = Mathf.RoundToInt(amount * damageMultiplier);
+        int totalDamage = Mathf.RoundToInt(amount * elementalMultiplier * incomingDamageModifier);
 
-        currentHealth -= totalDamage;
+        int damageToArmor = Mathf.Min(armor, totalDamage);
+        armor -= damageToArmor;
+        int damageToHealth = totalDamage - damageToArmor;
+
+        currentHealth -= damageToHealth;
+        GainEscalation(totalDamage); // Gain escalation from total damage before armor
+
         if (currentHealth < 0)
         {
             currentHealth = 0;
         }
-        Debug.Log($"{name} took {totalDamage} damage, now has {currentHealth} health.");
+        Debug.Log($"{name} took {damageToHealth} damage ({damageToArmor} absorbed by armor), now has {currentHealth} health and {armor} armor.");
     }
 
     public void Heal(int amount)
     {
-        currentHealth += amount;
+        int totalHealing = Mathf.RoundToInt(amount * incomingHealingModifier);
+        currentHealth += totalHealing;
         if (currentHealth > maxHealth)
         {
             currentHealth = maxHealth;
         }
-        Debug.Log($"{name} healed for {amount}, now has {currentHealth} health.");
+        Debug.Log($"{name} healed for {totalHealing}, now has {currentHealth} health.");
     }
 
     public void DrawCard()
@@ -95,20 +111,36 @@ public class Entity : MonoBehaviour
 
     public bool PlayCard(Card card, Entity target)
     {
-        if (hand.Contains(card) && currentMana >= card.cost)
+        if (!hand.Contains(card)) return false;
+
+        int finalCost = Mathf.Max(0, card.cost + manaCostModifier);
+
+        // Special check for CallManagerCard
+        if (card is CallManagerCard)
         {
-            currentMana -= card.cost;
-            card.Use(this, target);
-            hand.Remove(card);
-            discardPile.Add(card);
-            Debug.Log($"{name} played {card.name} for {card.cost} mana.");
-            return true;
+            if (escalation < maxEscalation)
+            {
+                Debug.Log("Not enough escalation to play this card!");
+                return false;
+            }
+            escalation = 0;
         }
-        else
+        else if (currentMana < finalCost)
         {
-            Debug.Log($"Not enough mana to play {card.name}.");
+            Debug.Log($"Not enough mana to play {card.name}. Needs {finalCost}, has {currentMana}.");
             return false;
         }
+
+        if (!(card is CallManagerCard))
+        {
+            currentMana -= finalCost;
+        }
+
+        card.Use(this, target);
+        hand.Remove(card);
+        discardPile.Add(card);
+        Debug.Log($"{name} played {card.name}.");
+        return true;
     }
 
     public void ShuffleDeck()
@@ -126,6 +158,21 @@ public class Entity : MonoBehaviour
     {
         statusEffects.Add(effect);
         effect.Apply(this);
+    }
+
+    public bool CanTakeTurn()
+    {
+        foreach (var effect in statusEffects)
+        {
+            if (effect is FlusteredEffect flusteredEffect)
+            {
+                if (flusteredEffect.CheckIfTurnSkipped())
+                {
+                    return false; // Turn is skipped
+                }
+            }
+        }
+        return true;
     }
 
     public void OnTurnStart()
@@ -146,6 +193,13 @@ public class Entity : MonoBehaviour
 
     public void OnTurnEnd()
     {
+        // Armor decay
+        if (armor > 0)
+        {
+            armor = Mathf.FloorToInt(armor * 0.5f);
+            Debug.Log($"{name}'s armor decayed to {armor}.");
+        }
+
         List<StatusEffect> effectsToRemove = new List<StatusEffect>();
         foreach (var effect in statusEffects)
         {
@@ -185,5 +239,15 @@ public class Entity : MonoBehaviour
         currentMana = maxMana;
 
         Debug.Log($"{name} leveled up to level {level}!");
+    }
+
+    public void GainEscalation(int amount)
+    {
+        escalation += amount;
+        if (escalation > maxEscalation)
+        {
+            escalation = maxEscalation;
+        }
+        Debug.Log($"{name} gained {amount} escalation, now has {escalation}.");
     }
 }

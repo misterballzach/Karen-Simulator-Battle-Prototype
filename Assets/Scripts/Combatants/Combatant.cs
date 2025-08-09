@@ -24,6 +24,10 @@ public class Combatant : MonoBehaviour
     public int insight = 0;
     public int maxInsight = 100;
 
+    [Header("Critical Hits")]
+    public float critChance = 0.05f; // 5% base chance
+    public float critDamageMultiplier = 1.5f; // 150% damage on crit
+
     [Header("Modifiers")]
     public float outgoingDamageModifier = 1f;
     public float incomingDamageModifier = 1f;
@@ -39,6 +43,9 @@ public class Combatant : MonoBehaviour
     public List<RhetoricalClass> rhetoricalWeaknesses = new List<RhetoricalClass>();
     public List<RhetoricalClass> rhetoricalResistances = new List<RhetoricalClass>();
 
+    [HideInInspector]
+    public Encounter currentEncounter;
+
     void Start()
     {
         currentEmotionalStamina = maxEmotionalStamina;
@@ -46,13 +53,37 @@ public class Combatant : MonoBehaviour
         ShuffleLoadout();
     }
 
-    public void TakeEmotionalDamage(int amount, RhetoricalClass rhetoricalClass)
+    public void TakeEmotionalDamage(int amount, RhetoricalClass rhetoricalClass, Combatant attacker)
     {
+        // --- Pre-damage Triggers ---
+        int modifiedDamage = amount;
+        foreach (var effect in statusEffects)
+        {
+            if (effect is IOnDamageTrigger trigger)
+            {
+                if (!trigger.OnTakeDamage(attacker, ref modifiedDamage))
+                {
+                    // If the trigger returns false, the damage is cancelled.
+                    Debug.Log($"Damage cancelled by {effect.name}.");
+                    return;
+                }
+            }
+        }
+
+        // --- Damage Calculation ---
+        bool isCrit = false;
+        if (attacker != null && Random.value < attacker.critChance)
+        {
+            isCrit = true;
+            Debug.Log("Critical Hit!");
+        }
+
+        float critMultiplier = isCrit ? attacker.critDamageMultiplier : 1f;
         float rhetoricalMultiplier = 1f;
         if (rhetoricalWeaknesses.Contains(rhetoricalClass)) rhetoricalMultiplier = 2f;
         else if (rhetoricalResistances.Contains(rhetoricalClass)) rhetoricalMultiplier = 0.5f;
 
-        int totalDamage = Mathf.RoundToInt(amount * rhetoricalMultiplier * incomingDamageModifier);
+        int totalDamage = Mathf.RoundToInt(modifiedDamage * critMultiplier * rhetoricalMultiplier * incomingDamageModifier);
 
         int damageToArmor = Mathf.Min(armor, totalDamage);
         armor -= damageToArmor;

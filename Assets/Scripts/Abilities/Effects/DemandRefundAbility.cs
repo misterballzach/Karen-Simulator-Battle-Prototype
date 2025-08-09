@@ -10,7 +10,7 @@ public class DemandRefundAbility : VerbalAbility
         if (target != null)
         {
             int modifiedDamage = Mathf.RoundToInt(emotionalDamage * user.outgoingDamageModifier);
-            target.TakeEmotionalDamage(modifiedDamage, this.rhetoricalClass);
+            target.TakeEmotionalDamage(modifiedDamage, this.rhetoricalClass, user);
             Debug.Log($"{user.name} used {this.name}, dealing {modifiedDamage} emotional damage to {target.name}.");
         }
     }

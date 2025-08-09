@@ -7,6 +7,17 @@ public enum StatusEffectType
 }
 
 [System.Serializable]
+public interface IOnDamageTrigger
+{
+    /// <summary>
+    /// Called when the owner is about to take damage.
+    /// </summary>
+    /// <param name="attacker">The combatant who initiated the damage.</param>
+    /// <param name="damage">The initial amount of damage. Can be modified.</param>
+    /// <returns>Return false to cancel the damage completely.</returns>
+    bool OnTakeDamage(Combatant attacker, ref int damage);
+}
+
 public class StatusEffect
 {
     public string name;

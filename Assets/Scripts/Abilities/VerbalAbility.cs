@@ -13,6 +13,7 @@ public abstract class VerbalAbility : ScriptableObject
     [Header("Gameplay")]
     public int cost; // Credibility cost
     public RhetoricalClass rhetoricalClass;
+    public bool isDebuff; // Used for passive triggers like Petty Solidarity
     public int cooldown;
     [Range(0, 1)]
     public float escalationRisk;

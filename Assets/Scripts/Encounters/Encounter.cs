@@ -7,15 +7,23 @@ using System.Collections.Generic;
 
 public class Encounter : MonoBehaviour
 {
-    public Combatant player;
-    public Combatant enemy;
+    public List<Combatant> playerParty;
+    public List<Combatant> enemyParty;
     public Location currentLocation;
+
+    private int currentPlayerIndex = 0;
+    private int currentEnemyIndex = 0;
 
     public ArgumentHandUI playerHandUI;
     public ConsequenceList consequenceList;
 
+    // We'll need separate cooldown dictionaries for each combatant.
+    // For simplicity in this step, we'll keep it as one for the party for now.
+    // This will be addressed properly when updating turn management.
     private Dictionary<VerbalAbility, int> playerCooldowns = new Dictionary<VerbalAbility, int>();
     private Dictionary<VerbalAbility, int> enemyCooldowns = new Dictionary<VerbalAbility, int>();
+
+    public Combatant ActiveCombatant => state == EncounterState.PlayerTurn ? playerParty[currentPlayerIndex] : enemyParty[currentEnemyIndex];
 
     [HideInInspector]
     public bool isViral = false;
@@ -30,20 +38,30 @@ public class Encounter : MonoBehaviour
 
     IEnumerator SetupEncounter()
     {
+        // Set the encounter reference for all combatants
+        foreach (var combatant in playerParty) combatant.currentEncounter = this;
+        foreach (var combatant in enemyParty) combatant.currentEncounter = this;
+
         ApplyLocationEffect();
 
-        if (PlayerProfile.s_instance != null)
+        // Assume the first player is the main character and gets the deck from the profile
+        if (PlayerProfile.s_instance != null && playerParty.Count > 0)
         {
-            player.verbalLoadout = new System.Collections.Generic.List<VerbalAbility>(PlayerProfile.s_instance.currentDeck);
-            player.ShuffleLoadout();
+            playerParty[0].verbalLoadout = new System.Collections.Generic.List<VerbalAbility>(PlayerProfile.s_instance.currentDeck);
+            playerParty[0].ShuffleLoadout();
         }
 
-        for(int i = 0; i < 3; i++)
+        // Each combatant prepares their starting hand
+        foreach (var combatant in playerParty)
         {
-            player.PrepareArgument();
-            enemy.PrepareArgument();
+            for (int i = 0; i < 3; i++) combatant.PrepareArgument();
         }
-        playerHandUI.UpdateHandUI();
+        foreach (var combatant in enemyParty)
+        {
+            for (int i = 0; i < 3; i++) combatant.PrepareArgument();
+        }
+
+        playerHandUI.UpdateHandUI(); // This will need to be updated to show the active player's hand
 
         yield return new WaitForSeconds(1f);
 
@@ -53,15 +71,21 @@ public class Encounter : MonoBehaviour
 
     void StartPlayerTurn()
     {
+        // To-do: This needs to be per-combatant
         UpdateCooldowns(playerCooldowns);
-        player.OnTurnStart();
-        if (!player.CanTakeTurn())
+
+        ActiveCombatant.OnTurnStart();
+        if (!ActiveCombatant.CanTakeTurn())
         {
+            Debug.Log($"{ActiveCombatant.name} cannot take their turn.");
             StartCoroutine(EndPlayerTurn());
             return;
         }
+
+        // The UI needs to be aware of which player is active
+        // playerHandUI.SetTarget(ActiveCombatant); // Imagined method
         playerHandUI.UpdateHandUI();
-        Debug.Log("Player's turn.");
+        Debug.Log($"{ActiveCombatant.name}'s turn.");
     }
 
     public void OnAbilityUsed(VerbalAbility ability, Combatant target)
@@ -73,11 +97,23 @@ public class Encounter : MonoBehaviour
             return;
         }
 
-        if (player.UseAbility(ability, target))
+        var user = ActiveCombatant;
+        if (user.UseAbility(ability, target))
         {
+            // --- Post-ability Triggers ---
+            // Handle Petty Solidarity passive
+            if (user.karenClass == KarenClass.RepentantKaren && ability.isDebuff)
+            {
+                Debug.Log("Petty Solidarity triggers! The party gains morale.");
+                foreach (var ally in playerParty)
+                {
+                    ally.RecoverStamina(5);
+                }
+            }
+
             ApplyReputationModifiers(ability);
-            TriggerMeterGains(player, ability);
-            CheckEscalationRisk(player, ability);
+            TriggerMeterGains(user, ability);
+            CheckEscalationRisk(user, ability);
 
             if (ability.cooldown > 0)
             {
@@ -88,7 +124,7 @@ public class Encounter : MonoBehaviour
         }
         else
         {
-            Debug.Log("Player failed to use ability.");
+            Debug.Log($"{user.name} failed to use ability.");
         }
     }
 
@@ -100,82 +136,97 @@ public class Encounter : MonoBehaviour
 
     IEnumerator EndPlayerTurn()
     {
-        player.OnTurnEnd();
+        ActiveCombatant.OnTurnEnd();
         yield return new WaitForSeconds(1f);
 
-        if (enemy.currentEmotionalStamina <= 0 || enemy.insight >= enemy.maxInsight)
+        // Check for win condition
+        if (enemyParty.All(c => c.currentEmotionalStamina <= 0))
         {
             state = EncounterState.Won;
             EndEncounter();
+            yield break;
+        }
+
+        currentPlayerIndex++;
+        if (currentPlayerIndex >= playerParty.Count)
+        {
+            // All players have had their turn
+            currentPlayerIndex = 0;
+            state = EncounterState.EnemyTurn;
+            StartCoroutine(EnemyTurn());
         }
         else
         {
-            state = EncounterState.EnemyTurn;
-            StartCoroutine(EnemyTurn());
+            // Next player's turn
+            state = EncounterState.PlayerTurn;
+            StartPlayerTurn();
         }
     }
 
     IEnumerator EnemyTurn()
     {
-        UpdateCooldowns(enemyCooldowns);
-        enemy.OnTurnStart();
-        if (!enemy.CanTakeTurn())
+        Debug.Log("Enemy phase starts.");
+        foreach (var enemy in enemyParty)
         {
-            enemy.OnTurnEnd();
-            if (player.currentEmotionalStamina <= 0) { state = EncounterState.Lost; EndEncounter(); }
-            else { state = EncounterState.PlayerTurn; StartPlayerTurn(); }
-            yield break;
-        }
-        Debug.Log("Enemy's turn.");
-
-        yield return new WaitForSeconds(1f);
-
-        Tuple<VerbalAbility, Combatant> aiChoice = null;
-        if (enemy.aiProfile != null)
-        {
-            aiChoice = enemy.aiProfile.ChooseAbility(enemy, player, enemy.preparedArguments, enemyCooldowns);
-        }
-        else
-        {
-            Debug.LogWarning("Enemy has no AI Profile assigned!");
-        }
-
-        if (aiChoice != null && aiChoice.Item1 != null)
-        {
-            VerbalAbility bestAbility = aiChoice.Item1;
-            Combatant target = aiChoice.Item2;
-
-            ApplyReputationModifiers(bestAbility);
-            TriggerMeterGains(enemy, bestAbility);
-            CheckEscalationRisk(enemy, bestAbility);
-
-            if (bestAbility.cooldown > 0)
+            if (!enemy.CanTakeTurn())
             {
-                enemyCooldowns[bestAbility] = bestAbility.cooldown;
+                Debug.Log($"{enemy.name} cannot take a turn.");
+                continue;
             }
 
-            enemy.UseAbility(bestAbility, target);
-            Debug.Log($"Enemy chose to use {bestAbility.name} on {target.name}.");
-        }
-        else
-        {
-            Debug.Log("Enemy has no good plays, ending turn.");
+            enemy.OnTurnStart();
+            Debug.Log($"{enemy.name}'s turn.");
+
+            // AI chooses ability and target.
+            // This needs a refactor of AIProfile to handle target selection from a party.
+            // For now, we'll have it target the first player.
+            Tuple<VerbalAbility, Combatant> aiChoice = null;
+            if (enemy.aiProfile != null && playerParty.Count > 0)
+            {
+                aiChoice = enemy.aiProfile.ChooseAbility(enemy, enemyParty, playerParty, enemy.preparedArguments, enemyCooldowns);
+            }
+            else
+            {
+                Debug.LogWarning($"{enemy.name} has no AI Profile or there are no players to target!");
+            }
+
+            if (aiChoice != null && aiChoice.Item1 != null)
+            {
+                VerbalAbility bestAbility = aiChoice.Item1;
+                Combatant target = aiChoice.Item2; // AI returns its chosen target
+
+                ApplyReputationModifiers(bestAbility);
+                TriggerMeterGains(enemy, bestAbility);
+                CheckEscalationRisk(enemy, bestAbility);
+
+                if (bestAbility.cooldown > 0)
+                {
+                    enemyCooldowns[bestAbility] = bestAbility.cooldown;
+                }
+
+                enemy.UseAbility(bestAbility, target);
+                Debug.Log($"{enemy.name} used {bestAbility.name} on {target.name}.");
+            }
+            else
+            {
+                Debug.Log($"{enemy.name} has no good plays, ending turn.");
+            }
+
+            enemy.OnTurnEnd();
+
+            // Check for lose condition after each enemy action
+            if (playerParty.All(c => c.currentEmotionalStamina <= 0))
+            {
+                state = EncounterState.Lost;
+                EndEncounter();
+                yield break;
+            }
+            yield return new WaitForSeconds(1f);
         }
 
-        yield return new WaitForSeconds(1f);
-
-        enemy.OnTurnEnd();
-
-        if (player.currentEmotionalStamina <= 0 || player.insight >= player.maxInsight)
-        {
-            state = EncounterState.Lost;
-            EndEncounter();
-        }
-        else
-        {
-            state = EncounterState.PlayerTurn;
-            StartPlayerTurn();
-        }
+        Debug.Log("Enemy phase ends.");
+        state = EncounterState.PlayerTurn;
+        StartPlayerTurn();
     }
 
     void ApplyLocationEffect()
@@ -205,18 +256,22 @@ public class Encounter : MonoBehaviour
 
         if (state == EncounterState.Won)
         {
-            bool wasLiberated = enemy.insight >= enemy.maxInsight;
-            string winMessage = wasLiberated ? "You've liberated them with a stunning emotional breakthrough!" : "You won the argument!";
-            Debug.Log(winMessage);
-
-            if (wasLiberated)
+            Debug.Log("Player party won the encounter!");
+            // For now, base liberation/reputation on the state of the first enemy
+            var enemyLeader = enemyParty.FirstOrDefault();
+            if (enemyLeader != null)
             {
-                CommuneManager.s_instance?.AddNewMember(enemy);
-                ReputationManager.s_instance?.AddReputation(enemy.faction, 5); // Small bonus for liberating
-            }
-            else
-            {
-                ReputationManager.s_instance?.AddReputation(enemy.faction, -10); // Penalty for dominating
+                bool wasLiberated = enemyLeader.insight >= enemyLeader.maxInsight;
+                if (wasLiberated)
+                {
+                    Debug.Log("You've liberated the enemy leader!");
+                    CommuneManager.s_instance?.AddNewMember(enemyLeader);
+                    ReputationManager.s_instance?.AddReputation(enemyLeader.faction, 5);
+                }
+                else
+                {
+                    ReputationManager.s_instance?.AddReputation(enemyLeader.faction, -10);
+                }
             }
 
             int xpGained = 50;
@@ -225,15 +280,17 @@ public class Encounter : MonoBehaviour
                 Debug.Log("Your meltdown went viral! Consequences are doubled!");
                 xpGained *= 2;
             }
-            player.GainXP(xpGained);
+            foreach (var member in playerParty)
+            {
+                member.GainXP(xpGained);
+            }
 
             state = EncounterState.Reward;
             Debug.Log("Starting reward phase...");
         }
         else if (state == EncounterState.Lost)
         {
-            string loseMessage = player.insight >= player.maxInsight ? "You had an emotional breakthrough and lost the argument." : "You had a breakdown.";
-            Debug.Log(loseMessage);
+            Debug.Log("Player party was defeated.");
         }
     }
 
@@ -283,15 +340,16 @@ public class Encounter : MonoBehaviour
 
     public void ClearCooldowns(Combatant combatant)
     {
-        if (combatant == player)
+        // TODO: Refactor cooldowns to be per-combatant
+        if (playerParty.Contains(combatant))
         {
             playerCooldowns.Clear();
-            Debug.Log("Player cooldowns cleared!");
+            Debug.Log("Player party cooldowns cleared!");
         }
-        else if (combatant == enemy)
+        else if (enemyParty.Contains(combatant))
         {
             enemyCooldowns.Clear();
-            Debug.Log("Enemy cooldowns cleared!");
+            Debug.Log("Enemy party cooldowns cleared!");
         }
     }
 

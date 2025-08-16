@@ -18,6 +18,8 @@ public interface IOnDamageTrigger
     bool OnTakeDamage(Combatant attacker, ref int damage);
 }
 
+using System.Collections.Generic;
+
 public class StatusEffect
 {
     public string name;
@@ -25,6 +27,7 @@ public class StatusEffect
     public string description;
     public int duration; // in turns
     public StatusEffectType type;
+    public List<RhetoricalClass> BlockedRhetoric = new List<RhetoricalClass>();
 
     protected Combatant owner;
 

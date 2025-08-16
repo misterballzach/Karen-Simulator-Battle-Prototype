@@ -6,6 +6,7 @@ public class WeaponizedPolitenessAbility : VerbalAbility
     public WeaponizedPolitenessAbility()
     {
         isDebuff = true;
+        damage = 5;
     }
 
     public override void Use(Combatant user, Combatant target)
@@ -29,7 +30,7 @@ public class WeaponizedPolitenessAbility : VerbalAbility
         {
             // Even if it doesn't stun, it should still do *something*. Let's add a small amount of emotional damage.
             Debug.Log($"{user.name} uses Weaponized Politeness, but the target's morale is too high to stun.");
-            target.TakeEmotionalDamage(5, rhetoricalClass, user);
+            target.TakeEmotionalDamage(damage, rhetoricalClass, user);
         }
     }
 }

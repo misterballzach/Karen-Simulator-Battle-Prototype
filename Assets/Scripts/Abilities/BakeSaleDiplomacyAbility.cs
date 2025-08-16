@@ -4,7 +4,10 @@ using System.Linq;
 [CreateAssetMenu(fileName = "Bake Sale Diplomacy", menuName = "KAREN/Abilities/Bake Sale Diplomacy")]
 public class BakeSaleDiplomacyAbility : VerbalAbility
 {
-    public int moraleRestoreAmount = 20;
+    public BakeSaleDiplomacyAbility()
+    {
+        healing = 20;
+    }
 
     public override void Use(Combatant user, Combatant target)
     {
@@ -14,7 +17,7 @@ public class BakeSaleDiplomacyAbility : VerbalAbility
             foreach (var ally in user.currentEncounter.playerParty)
             {
                 // Restore morale (Emotional Stamina)
-                ally.RecoverStamina(moraleRestoreAmount);
+                ally.RecoverStamina(healing);
 
                 // Remove one debuff
                 if (ally.statusEffects.Count > 0)

@@ -15,8 +15,7 @@ public class CallTheCopsUltimate : VerbalAbility
         if (target != null)
         {
             Debug.Log($"{user.name} is calling the cops on {target.name}!");
-            // The "Fired" effect is a good stand-in for the "Cops have been called" effect
-            target.AddStatusEffect(new FiredEffect());
+            target.AddStatusEffect(new CopsCalledEffect());
         }
     }
 }

@@ -9,5 +9,6 @@ public class CancelledEffect : StatusEffect
         description = "This unit has been cancelled. They cannot use Aggression abilities.";
         type = StatusEffectType.Debuff;
         duration = 4;
+        BlockedRhetoric.Add(RhetoricalClass.Aggression);
     }
 }

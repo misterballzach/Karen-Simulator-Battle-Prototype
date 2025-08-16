@@ -135,31 +135,19 @@ public class Combatant : MonoBehaviour
         {
             foreach (var upgrade in PlayerProfile.s_instance.purchasedUpgrades[ability])
             {
-                // This is a simplified application logic. A real game might need a more robust system.
-                switch (upgrade.type)
-                {
-                    case AbilityUpgrade.UpgradeType.ReduceCost:
-                        modifiedAbility.cost -= upgrade.value;
-                        break;
-                    // Note: Modifying damage/healing would require changing the ability subclasses
-                    // to have their damage/heal amounts in variables that can be modified.
-                    // This is a larger refactor I will skip for now to keep this step manageable.
-                }
+                upgrade.Apply(modifiedAbility);
             }
         }
 
         // --- Check for status effects that prevent ability use ---
-        if (statusEffects.Exists(e => e is ExposedEffect) && (modifiedAbility.rhetoricalClass == RhetoricalClass.Manipulation || modifiedAbility.rhetoricalClass == RhetoricalClass.Delusion))
+        foreach (var effect in statusEffects)
         {
-            Debug.Log($"Cannot use {modifiedAbility.rhetoricalClass} abilities while Exposed!");
-            Destroy(modifiedAbility); // Clean up the temporary instance
-            return false;
-        }
-        if (statusEffects.Exists(e => e is CancelledEffect) && modifiedAbility.rhetoricalClass == RhetoricalClass.Aggression)
-        {
-            Debug.Log($"Cannot use {modifiedAbility.rhetoricalClass} abilities while Cancelled!");
-            Destroy(modifiedAbility); // Clean up
-            return false;
+            if (effect.BlockedRhetoric.Contains(modifiedAbility.rhetoricalClass))
+            {
+                Debug.Log($"Cannot use {modifiedAbility.rhetoricalClass} abilities due to {effect.name}!");
+                Destroy(modifiedAbility); // Clean up the temporary instance
+                return false;
+            }
         }
 
         // --- Check costs ---

@@ -39,4 +39,12 @@ document.addEventListener('DOMContentLoaded', () => {
     audio.addEventListener('play', startAnimation);
     audio.addEventListener('pause', stopAnimation);
     audio.addEventListener('ended', stopAnimation);
+
+    const cleanup = () => {
+        audio.removeEventListener('play', startAnimation);
+        audio.removeEventListener('pause', stopAnimation);
+        audio.removeEventListener('ended', stopAnimation);
+    };
+
+    window.addEventListener('beforeunload', cleanup);
 });

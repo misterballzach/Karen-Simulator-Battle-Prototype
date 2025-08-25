@@ -45,6 +45,7 @@ public class DialogueManager : MonoBehaviour
 
         foreach (var button in currentChoiceButtons)
         {
+            button.GetComponent<Button>().onClick.RemoveAllListeners();
             Destroy(button);
         }
         currentChoiceButtons.Clear();

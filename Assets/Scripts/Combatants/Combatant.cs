@@ -7,6 +7,7 @@ public class Combatant : MonoBehaviour
     public Faction faction;
     public KarenClass karenClass;
     public AIProfile aiProfile;
+    public SpriteRenderer characterSprite;
 
     [Header("Stats")]
     public int level = 1;
@@ -285,6 +286,14 @@ public class Combatant : MonoBehaviour
         if (insight >= maxInsight)
         {
             // This is a win condition handled by the Encounter
+        }
+    }
+
+    public void SetSprite(Sprite newSprite)
+    {
+        if (characterSprite != null)
+        {
+            characterSprite.sprite = newSprite;
         }
     }
 }

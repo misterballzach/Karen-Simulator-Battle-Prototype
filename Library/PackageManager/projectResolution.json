@@ -29,16 +29,6 @@
       "source": "builtin",
       "testable": false
     },
-    "com.unity.ads@4.4.2": {
-      "name": "com.unity.ads",
-      "displayName": "Advertisement Legacy",
-      "resolvedPath": "C:\\Users\\zacha\\Documents\\GitHub\\Karen-Simulator-Battle-Prototype\\Library\\PackageCache\\com.unity.ads@a7b997f68a1d",
-      "fingerprint": "a7b997f68a1d40387ca4d33fc75578709c140a37",
-      "editorCompatibility": "2018.4.18f1",
-      "version": "4.4.2",
-      "source": "registry",
-      "testable": false
-    },
     "com.unity.ai.navigation@2.0.8": {
       "name": "com.unity.ai.navigation",
       "displayName": "AI Navigation",
@@ -46,16 +36,6 @@
       "fingerprint": "eb5635ad590d47cef2a5c920d9475cc222db3f67",
       "editorCompatibility": "6000.0.0a1",
       "version": "2.0.8",
-      "source": "registry",
-      "testable": false
-    },
-    "com.unity.analytics@3.8.1": {
-      "name": "com.unity.analytics",
-      "displayName": "Analytics Library",
-      "resolvedPath": "C:\\Users\\zacha\\Documents\\GitHub\\Karen-Simulator-Battle-Prototype\\Library\\PackageCache\\com.unity.analytics@6cc66d58ac08",
-      "fingerprint": "6cc66d58ac08950316d3b86a26c92187aca1ddb0",
-      "editorCompatibility": "2019.3.0a1",
-      "version": "3.8.1",
       "source": "registry",
       "testable": false
     },
@@ -99,13 +79,23 @@
       "source": "builtin",
       "testable": false
     },
-    "com.unity.purchasing@4.12.2": {
+    "com.unity.purchasing@4.13.0": {
       "name": "com.unity.purchasing",
       "displayName": "In App Purchasing",
-      "resolvedPath": "C:\\Users\\zacha\\Documents\\GitHub\\Karen-Simulator-Battle-Prototype\\Library\\PackageCache\\com.unity.purchasing@649c6c7b3b1b",
-      "fingerprint": "649c6c7b3b1b6277839041f4987c0a1e66176678",
+      "resolvedPath": "C:\\Users\\zacha\\Documents\\GitHub\\Karen-Simulator-Battle-Prototype\\Library\\PackageCache\\com.unity.purchasing@f0b6c9dee9b9",
+      "fingerprint": "f0b6c9dee9b94c70a36061f31deeb29d834cf092",
       "editorCompatibility": "2020.3.0a1",
-      "version": "4.12.2",
+      "version": "4.13.0",
+      "source": "registry",
+      "testable": false
+    },
+    "com.unity.services.analytics@6.1.0": {
+      "name": "com.unity.services.analytics",
+      "displayName": "Analytics",
+      "resolvedPath": "C:\\Users\\zacha\\Documents\\GitHub\\Karen-Simulator-Battle-Prototype\\Library\\PackageCache\\com.unity.services.analytics@10a9ca5d5622",
+      "fingerprint": "10a9ca5d56226d26b71614c3ee36a91aaa253b96",
+      "editorCompatibility": "2021.3.0a1",
+      "version": "6.1.0",
       "source": "registry",
       "testable": false
     },
@@ -438,16 +428,6 @@
       "fingerprint": "9e81a5e382457b799480b311ce51187be99abbbf",
       "editorCompatibility": "2021.3.0a1",
       "version": "1.14.0",
-      "source": "registry",
-      "testable": false
-    },
-    "com.unity.services.analytics@6.1.0": {
-      "name": "com.unity.services.analytics",
-      "displayName": "Analytics",
-      "resolvedPath": "C:\\Users\\zacha\\Documents\\GitHub\\Karen-Simulator-Battle-Prototype\\Library\\PackageCache\\com.unity.services.analytics@10a9ca5d5622",
-      "fingerprint": "10a9ca5d56226d26b71614c3ee36a91aaa253b96",
-      "editorCompatibility": "2021.3.0a1",
-      "version": "6.1.0",
       "source": "registry",
       "testable": false
     },

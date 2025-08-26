@@ -7,7 +7,6 @@ public enum StatusEffectType
     Debuff
 }
 
-[System.Serializable]
 public interface IOnDamageTrigger
 {
     /// <summary>

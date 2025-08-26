@@ -11,7 +11,7 @@ public class CardRewardUI : MonoBehaviour
 
     private List<GameObject> choiceObjects = new List<GameObject>();
 
-    public void DisplayRewardChoices(List<Card> choices)
+    public void DisplayRewardChoices(List<VerbalAbility> choices)
     {
         rewardScreen.SetActive(true);
 
@@ -23,22 +23,22 @@ public class CardRewardUI : MonoBehaviour
         choiceObjects.Clear();
 
         // Create new choice buttons
-        foreach (Card card in choices)
+        foreach (VerbalAbility ability in choices)
         {
             GameObject newChoiceObj = Instantiate(cardChoicePrefab, choiceContainer);
-            // newChoiceObj.GetComponent<CardDisplay>().SetCard(card); // Set visuals
-            newChoiceObj.GetComponentInChildren<Text>().text = card.name; // Simple display
+            // newChoiceObj.GetComponent<CardDisplay>().SetCard(ability); // Set visuals
+            newChoiceObj.GetComponentInChildren<Text>().text = ability.name; // Simple display
 
             Button button = newChoiceObj.GetComponent<Button>();
-            button.onClick.AddListener(() => OnChoiceClicked(card));
+            button.onClick.AddListener(() => OnChoiceClicked(ability));
 
             choiceObjects.Add(newChoiceObj);
         }
     }
 
-    private void OnChoiceClicked(Card chosenCard)
+    private void OnChoiceClicked(VerbalAbility chosenAbility)
     {
-        rewardSystem.OnCardChosen(chosenCard);
+        rewardSystem.OnCardChosen(chosenAbility);
     }
 
     public void HideRewardScreen()

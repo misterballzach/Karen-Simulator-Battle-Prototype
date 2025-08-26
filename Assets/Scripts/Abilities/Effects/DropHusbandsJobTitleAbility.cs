@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Drop Husband's Job Title", menuName = "KAREN/Abilities/Drop Husband's Job Title")]
 public class DropHusbandsJobTitleAbility : VerbalAbility
 {
-    public void Use(Combatant user, Combatant target)
+    public override void Use(Combatant user, Combatant target)
     {
         if (target != null)
         {

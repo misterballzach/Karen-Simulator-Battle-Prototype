@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 public class CardRewardSystem : MonoBehaviour
 {
-    public List<Card> rewardableCards;
+    public List<VerbalAbility> rewardableCards;
     public CardRewardUI rewardUI;
-    public Entity player;
+    public Combatant player;
 
     public void ShowRewardScreen(int numberOfChoices)
     {
-        List<Card> choices = new List<Card>();
-        List<Card> availableCards = new List<Card>(rewardableCards);
+        List<VerbalAbility> choices = new List<VerbalAbility>();
+        List<VerbalAbility> availableCards = new List<VerbalAbility>(rewardableCards);
 
         for (int i = 0; i < numberOfChoices; i++)
         {
@@ -24,14 +24,14 @@ public class CardRewardSystem : MonoBehaviour
         rewardUI.DisplayRewardChoices(choices);
     }
 
-    public void OnCardChosen(Card chosenCard)
+    public void OnCardChosen(VerbalAbility chosenAbility)
     {
-        if (player != null && chosenCard != null)
+        if (player != null && chosenAbility != null)
         {
             // A real implementation would add this to a master deck list,
             // not the temporary battle deck.
-            player.deck.Add(chosenCard);
-            Debug.Log($"Added {chosenCard.name} to the player's deck.");
+            player.verbalLoadout.Add(chosenAbility);
+            Debug.Log($"Added {chosenAbility.name} to the player's deck.");
         }
         rewardUI.HideRewardScreen();
     }

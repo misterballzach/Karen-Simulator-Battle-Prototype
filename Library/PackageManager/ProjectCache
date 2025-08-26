@@ -5,16 +5,16 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638917912354022080
-    m_Hash: 2836207717
+      ticks: 638917930364263377
+    m_Hash: 1067063894
   m_LockFileStatus:
     m_FilePath: C:/Users/zacha/Documents/GitHub/Karen-Simulator-Battle-Prototype/Packages/packages-lock.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638917912726721723
-    m_Hash: 1764111289
+      ticks: 638917930364263377
+    m_Hash: 3973686020
 m_EmbeddedPackageManifests:
   m_ManifestsStatus: {}
 m_LocalPackages:

@@ -427,6 +427,8 @@
 "Assets/BattleDemo/AI/DemoEnemyAI.cs"
 "Assets/BattleDemo/BattleDemoGenerator.cs"
 "Assets/BattleDemo/UI/AbilityCardUI.cs"
+"Assets/BattleDemo/UI/CombatantStatusUI.cs"
+"Assets/BattleDemo/UI/CustomHandUIUpdater.cs"
 "Assets/Scripts/Abilities/AbilityUpgrade.cs"
 "Assets/Scripts/Abilities/BakeSaleDiplomacyAbility.cs"
 "Assets/Scripts/Abilities/CommitteeCoupAbility.cs"

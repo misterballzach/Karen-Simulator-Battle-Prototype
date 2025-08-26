@@ -127,7 +127,7 @@ public class BattleDemoGenerator : MonoBehaviour
 
         // Create the card "prefab" template
         GameObject cardTemplate = new GameObject("CardTemplate");
-        cardTemplate.transform.SetParent(handContainerGO.transform);
+        cardTemplate.transform.SetParent(canvas.transform, false);
         cardTemplate.AddComponent<Image>();
         RectTransform cardRect = cardTemplate.GetComponent<RectTransform>();
         cardRect.sizeDelta = new Vector2(120, 150);

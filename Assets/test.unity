@@ -319,7 +319,7 @@ GameObject:
   - component: {fileID: 1946331920}
   - component: {fileID: 1946331919}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: DemoGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -337,7 +337,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5076e125651fdc4893478254fcf0d11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BattleDemoGenerator
-  combatantSprite: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  combatantSprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   uiFont: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!4 &1946331920
 Transform:

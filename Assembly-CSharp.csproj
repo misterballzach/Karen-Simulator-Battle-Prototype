@@ -42,12 +42,14 @@
     <UnityVersion>6000.2.1f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Analyzer Include="C:\Users\zacha\.vscode\extensions\visualstudiotoolsforunity.vstuc-1.1.3\Analyzers\Microsoft.Unity.Analyzers.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.1f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.SourceGenerators.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.1f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.1f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Locations\LocationEffect.cs" />
+    <Compile Include="Assets\BattleDemo\UI\CustomHandUIUpdater.cs" />
     <Compile Include="Assets\Scripts\Locations\Location.cs" />
     <Compile Include="Assets\Scripts\StatusEffects\ReframeEffect.cs" />
     <Compile Include="Assets\Scripts\GameManagement\Dialogue\DialogueManager.cs" />
@@ -67,6 +69,7 @@
     <Compile Include="Assets\Scripts\Abilities\ReframeAbility.cs" />
     <Compile Include="Assets\Scripts\Abilities\SnarkyRetortAbility.cs" />
     <Compile Include="Assets\BattleDemo\Abilities\DefensiveStanceAbility.cs" />
+    <Compile Include="Assets\BattleDemo\UI\CombatantStatusUI.cs" />
     <Compile Include="Assets\Scripts\StatusEffects\ManagersScornEffect.cs" />
     <Compile Include="Assets\Scripts\Abilities\Effects\DropHusbandsJobTitleAbility.cs" />
     <Compile Include="Assets\Scripts\Combatants\CassandraFactory.cs" />

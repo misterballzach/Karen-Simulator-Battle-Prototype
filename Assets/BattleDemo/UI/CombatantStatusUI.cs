@@ -34,7 +34,7 @@ public class CombatantStatusUI : MonoBehaviour
         textGO.transform.SetParent(transform, false);
         Text text = textGO.AddComponent<Text>();
         text.text = content;
-        text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         text.fontSize = fontSize;
         text.color = Color.white;
         return text;

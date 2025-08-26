@@ -193,7 +193,7 @@ public class BattleDemoGenerator : MonoBehaviour
         textGO.transform.SetParent(parent.transform, false);
         Text text = textGO.AddComponent<Text>();
         text.text = content;
-        text.font = uiFont != null ? uiFont : Resources.GetBuiltinResource<Font>("Arial.ttf");
+        text.font = uiFont != null ? uiFont : Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         text.fontSize = fontSize;
         text.color = Color.black;
         text.alignment = TextAnchor.MiddleCenter;

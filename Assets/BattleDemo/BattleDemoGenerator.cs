@@ -179,7 +179,7 @@ public class BattleDemoGenerator : MonoBehaviour
         enemyStatusGO.transform.SetParent(canvas.transform, false);
         enemyStatusGO.GetComponent<RectTransform>().anchorMin = new Vector2(1, 1);
         enemyStatusGO.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
-        enemyStatusGO.GetComponent<RectTransform>().pivot = new Vecto`r2(1, 1);
+        enemyStatusGO.GetComponent<RectTransform>().pivot = new Vector2(1, 1);
         enemyStatusGO.GetComponent<RectTransform>().anchoredPosition = new Vector2(-20, -20);
         enemyStatusGO.AddComponent<CombatantStatusUI>().Initialize(enemy, "Enemy", uiFont);
     }

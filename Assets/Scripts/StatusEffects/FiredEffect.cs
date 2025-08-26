@@ -13,7 +13,7 @@ public class FiredEffect : StatusEffect
         duration = 2; // Lasts 2 turns
     }
 
-    public override void Apply(Entity target)
+    public override void Apply(Combatant target)
     {
         base.Apply(target);
         if (owner != null)

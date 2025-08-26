@@ -13,7 +13,7 @@ public class ManagersScornEffect : StatusEffect
         type = StatusEffectType.Debuff;
     }
 
-    public override void Apply(Entity target)
+    public override void Apply(Combatant target)
     {
         base.Apply(target);
         if (owner != null)

@@ -22,13 +22,13 @@ public class DeckBuilderUI : MonoBehaviour
         foreach (Transform child in collectionContainer) { Destroy(child.gameObject); }
 
         // Fill with cards from player profile
-        foreach (Card card in PlayerProfile.s_instance.masterCardCollection)
+        foreach (VerbalAbility ability in PlayerProfile.s_instance.masterAbilityCollection)
         {
             GameObject cardObj = Instantiate(cardUIPrefab, collectionContainer);
             // Setup card display
             // Add button listener to add card to deck
-            cardObj.GetComponentInChildren<Text>().text = card.name;
-            cardObj.GetComponent<Button>().onClick.AddListener(() => AddCardToDeck(card));
+            cardObj.GetComponentInChildren<Text>().text = ability.name;
+            cardObj.GetComponent<Button>().onClick.AddListener(() => AddCardToDeck(ability));
         }
     }
 
@@ -38,30 +38,30 @@ public class DeckBuilderUI : MonoBehaviour
         foreach (Transform child in deckContainer) { Destroy(child.gameObject); }
 
         // Fill with cards from player profile
-        foreach (Card card in PlayerProfile.s_instance.currentDeck)
+        foreach (VerbalAbility ability in PlayerProfile.s_instance.currentDeck)
         {
             GameObject cardObj = Instantiate(cardUIPrefab, deckContainer);
             // Setup card display
             // Add button listener to remove card from deck
-            cardObj.GetComponentInChildren<Text>().text = card.name;
-            cardObj.GetComponent<Button>().onClick.AddListener(() => RemoveCardFromDeck(card));
+            cardObj.GetComponentInChildren<Text>().text = ability.name;
+            cardObj.GetComponent<Button>().onClick.AddListener(() => RemoveCardFromDeck(ability));
         }
     }
 
-    public void AddCardToDeck(Card card)
+    public void AddCardToDeck(VerbalAbility ability)
     {
         if (PlayerProfile.s_instance.currentDeck.Count >= MAX_DECK_SIZE)
         {
             Debug.Log("Deck is full!");
             return;
         }
-        PlayerProfile.s_instance.currentDeck.Add(card);
+        PlayerProfile.s_instance.currentDeck.Add(ability);
         PopulateDeck();
     }
 
-    public void RemoveCardFromDeck(Card card)
+    public void RemoveCardFromDeck(VerbalAbility ability)
     {
-        PlayerProfile.s_instance.currentDeck.Remove(card);
+        PlayerProfile.s_instance.currentDeck.Remove(ability);
         PopulateDeck();
     }
 }

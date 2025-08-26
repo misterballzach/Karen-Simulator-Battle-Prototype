@@ -14,7 +14,7 @@ public class ViralEffect : StatusEffect
     public override void Apply(Combatant target)
     {
         base.Apply(target);
-        Encounter encounter = Object.FindObjectOfType<Encounter>();
+        Encounter encounter = Object.FindFirstObjectByType<Encounter>();
         if (encounter != null)
         {
             encounter.isViral = true;

@@ -20,7 +20,7 @@ public class CodeBlondeEffect : StatusEffect
         {
             owner.outgoingDamageModifier += damageBuff;
 
-            Encounter encounter = Object.FindObjectOfType<Encounter>();
+            Encounter encounter = Object.FindFirstObjectByType<Encounter>();
             if (encounter != null)
             {
                 encounter.ClearCooldowns(owner);

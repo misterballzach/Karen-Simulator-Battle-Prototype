@@ -19,12 +19,29 @@ public class DemoSceneSetup
         // 3. Attach the generator script
         BattleDemoGenerator generatorComponent = generatorGO.AddComponent<BattleDemoGenerator>();
 
+        // Ensure the asset is imported as a Sprite
+        TextureImporter textureImporter = AssetImporter.GetAtPath(SPRITE_PATH) as TextureImporter;
+        if (textureImporter != null)
+        {
+            if (textureImporter.textureType != TextureImporterType.Sprite)
+            {
+                Debug.Log("Correcting texture type for " + SPRITE_PATH + ". Setting to 'Sprite'.");
+                textureImporter.textureType = TextureImporterType.Sprite;
+                AssetDatabase.ImportAsset(SPRITE_PATH, ImportAssetOptions.ForceUpdate);
+            }
+        }
+        else
+        {
+            Debug.LogError("Could not get TextureImporter for path: " + SPRITE_PATH + ". The file might be missing or not a texture.");
+            return;
+        }
+
         // 4. Load the sprite asset
         Sprite combatantSprite = AssetDatabase.LoadAssetAtPath<Sprite>(SPRITE_PATH);
 
         if (combatantSprite == null)
         {
-            Debug.LogError("Could not find combatant sprite at path: " + SPRITE_PATH + ". Please ensure the asset exists.");
+            Debug.LogError("Could not find combatant sprite at path: " + SPRITE_PATH + ". Please ensure the asset exists and is imported as a Sprite.");
             return;
         }
 

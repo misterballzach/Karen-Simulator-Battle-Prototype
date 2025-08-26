@@ -8,7 +8,7 @@ public class AbilityClickHandler : MonoBehaviour, IPointerClickHandler
 
     void Start()
     {
-        encounter = FindObjectOfType<Encounter>();
+        encounter = FindFirstObjectByType<Encounter>();
     }
 
     public void OnPointerClick(PointerEventData eventData)

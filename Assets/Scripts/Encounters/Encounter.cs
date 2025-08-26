@@ -358,7 +358,7 @@ public class Encounter : MonoBehaviour
     {
         if (ability.escalationRisk > 0)
         {
-            if (Random.value < ability.escalationRisk)
+            if (UnityEngine.Random.value < ability.escalationRisk)
             {
                 Consequence consequence = consequenceList?.GetRandomConsequence();
                 if (consequence != null)

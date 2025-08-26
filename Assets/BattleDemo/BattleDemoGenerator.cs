@@ -15,6 +15,7 @@ public class BattleDemoGenerator : MonoBehaviour
     {
         // --- Create Core Systems ---
         CreateEventSystem();
+        CreateAudioManager();
         Canvas canvas = CreateCanvas();
         GameObject encounterGO = new GameObject("EncounterManager");
         encounter = encounterGO.AddComponent<Encounter>();
@@ -63,6 +64,23 @@ public class BattleDemoGenerator : MonoBehaviour
         CreateEndTurnButton(canvas, encounter);
 
         Debug.Log("Battle Demo Generated. Starting encounter...");
+    }
+
+    private void CreateAudioManager()
+    {
+        if (FindObjectOfType<AudioManager>() == null)
+        {
+            GameObject audioManagerGO = new GameObject("AudioManager");
+            AudioManager audioManager = audioManagerGO.AddComponent<AudioManager>();
+
+            GameObject musicSourceGO = new GameObject("MusicSource");
+            musicSourceGO.transform.SetParent(audioManagerGO.transform);
+            audioManager.musicSource = musicSourceGO.AddComponent<AudioSource>();
+
+            GameObject sfxSourceGO = new GameObject("SfxSource");
+            sfxSourceGO.transform.SetParent(audioManagerGO.transform);
+            audioManager.sfxSource = sfxSourceGO.AddComponent<AudioSource>();
+        }
     }
 
     // --- Helper Methods for Creation ---

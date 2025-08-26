@@ -10,6 +10,15 @@ public class BattleDemoGenerator : MonoBehaviour
 
     void Start()
     {
+        // --- Create Audio Manager ---
+        if (AudioManager.Instance == null)
+        {
+            GameObject amGO = new GameObject("AudioManager");
+            AudioManager am = amGO.AddComponent<AudioManager>();
+            am.musicSource = amGO.AddComponent<AudioSource>();
+            am.sfxSource = amGO.AddComponent<AudioSource>();
+        }
+
         // --- Load Assets from Resources ---
         Font uiFont = null; // No custom font found, will use Unity's fallback
         Sprite playerBodySprite = Resources.Load<Sprite>("Characters/PNG/Default/blue_body_square");
@@ -292,14 +301,32 @@ public class BattleDemoGenerator : MonoBehaviour
         GameObject buttonGO = new GameObject("EndTurnButton");
         buttonGO.transform.SetParent(canvas.transform, false);
         Image buttonImage = buttonGO.AddComponent<Image>();
-        if (endTurnButtonSprite != null)
+        try
         {
-            buttonImage.sprite = endTurnButtonSprite;
-            buttonImage.type = Image.Type.Simple;
+            if (endTurnButtonSprite != null && endTurnButtonSprite.texture != null)
+            {
+                buttonImage.sprite = endTurnButtonSprite;
+                buttonImage.type = Image.Type.Simple;
+            }
+            else
+            {
+                Debug.LogError("End Turn button sprite is missing or invalid! Using a placeholder color.");
+                buttonImage.color = Color.grey;
+            }
         }
+        catch (System.ArgumentException ex)
+        {
+            Debug.LogError($"ArgumentException while setting End Turn button sprite. Using placeholder. Exception: {ex.Message}");
+            buttonImage.sprite = null;
+            buttonImage.color = Color.magenta; // Use a bright color to make the error obvious in-game
+        }
+
         Button button = buttonGO.AddComponent<Button>();
         button.onClick.AddListener(currentEncounter.OnEndTurnButton);
-        button.onClick.AddListener(AudioManager.Instance.PlayClickSound);
+        button.onClick.AddListener(() => {
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlayClickSound();
+        });
 
         RectTransform rect = buttonGO.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(1, 0);

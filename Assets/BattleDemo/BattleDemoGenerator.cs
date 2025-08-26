@@ -6,28 +6,28 @@ using System.Linq;
 
 public class BattleDemoGenerator : MonoBehaviour
 {
-    [Header("Assets (Drag from Project)")]
-    public Font uiFont; // Optional: for better text rendering
-    public Sprite playerBodySprite;
-    public Sprite playerFaceSprite;
-    public Sprite enemyBodySprite;
-    public Sprite enemyFaceSprite;
-    public Sprite endTurnButtonSprite;
-    public Sprite cardBackgroundSprite;
-    public Sprite sliderBackgroundSprite;
-    public Sprite sliderFillSprite;
-
     private Encounter encounter;
 
     void Start()
     {
+        // --- Load Assets from Resources ---
+        Font uiFont = null; // No custom font found, will use Unity's fallback
+        Sprite playerBodySprite = Resources.Load<Sprite>("Characters/PNG/Default/blue_body_square");
+        Sprite playerFaceSprite = Resources.Load<Sprite>("Characters/PNG/Default/face_a");
+        Sprite enemyBodySprite = Resources.Load<Sprite>("Characters/PNG/Default/red_body_square");
+        Sprite enemyFaceSprite = Resources.Load<Sprite>("Characters/PNG/Default/face_b");
+        Sprite endTurnButtonSprite = Resources.Load<Sprite>("UI/PNG/Blue/Default/button_rectangle_flat");
+        Sprite cardBackgroundSprite = null; // No specific card background found, will use fallback color
+        Sprite sliderBackgroundSprite = Resources.Load<Sprite>("UI/PNG/Blue/Default/slide_horizontal_grey");
+        Sprite sliderFillSprite = Resources.Load<Sprite>("UI/PNG/Blue/Default/slide_hangle");
+
         // --- Create Core Systems ---
         CreateEventSystem();
         Canvas canvas = CreateCanvas();
         GameObject encounterGO = new GameObject("EncounterManager");
         encounter = encounterGO.AddComponent<Encounter>();
 
-        // --- Load Sprites ---
+        // --- Load Ability Sprites ---
         Sprite aggressionIcon = Resources.Load<Sprite>("UI/icon_cross");
         Sprite manipulationIcon = Resources.Load<Sprite>("UI/icon_circle");
         Sprite vulnerabilityIcon = Resources.Load<Sprite>("UI/icon_checkmark");
@@ -144,10 +144,10 @@ public class BattleDemoGenerator : MonoBehaviour
             enemy.PrepareArgument();
         }
 
-        ArgumentHandUI handUI = CreateArgumentHandUI(canvas, player, encounter);
+        ArgumentHandUI handUI = CreateArgumentHandUI(canvas, player, encounter, cardBackgroundSprite, uiFont);
         encounter.playerHandUI = handUI;
-        CreateStatusUI(canvas, player, enemy);
-        CreateEndTurnButton(canvas, encounter);
+        CreateStatusUI(canvas, player, enemy, sliderBackgroundSprite, sliderFillSprite);
+        CreateEndTurnButton(canvas, encounter, endTurnButtonSprite, uiFont);
 
         Debug.Log("Battle Demo Generated. Starting encounter...");
     }
@@ -197,7 +197,7 @@ public class BattleDemoGenerator : MonoBehaviour
         }
     }
 
-    private ArgumentHandUI CreateArgumentHandUI(Canvas canvas, Combatant player, Encounter currentEncounter)
+    private ArgumentHandUI CreateArgumentHandUI(Canvas canvas, Combatant player, Encounter currentEncounter, Sprite cardBackgroundSprite, Font uiFont)
     {
         GameObject handContainerGO = new GameObject("HandContainer");
         handContainerGO.transform.SetParent(canvas.transform, false);
@@ -242,9 +242,9 @@ public class BattleDemoGenerator : MonoBehaviour
         artworkRect.offsetMin = new Vector2(10, 50);
         artworkRect.offsetMax = new Vector2(-10, -10);
 
-        Text nameText = CreateText(cardTemplate, "NameText", "Ability Name", 14, new Vector2(0, 25));
-        Text descText = CreateText(cardTemplate, "DescriptionText", "Description", 10, new Vector2(0, -20));
-        Text costText = CreateText(cardTemplate, "CostText", "Cost: X", 12, new Vector2(0, -65));
+        Text nameText = CreateText(cardTemplate, "NameText", "Ability Name", 14, new Vector2(0, 25), uiFont);
+        Text descText = CreateText(cardTemplate, "DescriptionText", "Description", 10, new Vector2(0, -20), uiFont);
+        Text costText = CreateText(cardTemplate, "CostText", "Cost: X", 12, new Vector2(0, -65), uiFont);
 
         AbilityCardUI cardUI = cardTemplate.AddComponent<AbilityCardUI>();
         cardUI.artworkImage = artworkImage;
@@ -260,7 +260,7 @@ public class BattleDemoGenerator : MonoBehaviour
         return handUI;
     }
 
-    private void CreateStatusUI(Canvas canvas, Combatant player, Combatant enemy)
+    private void CreateStatusUI(Canvas canvas, Combatant player, Combatant enemy, Sprite sliderBackgroundSprite, Sprite sliderFillSprite)
     {
         GameObject playerStatusGO = new GameObject("PlayerStatus");
         playerStatusGO.transform.SetParent(canvas.transform, false);
@@ -287,7 +287,7 @@ public class BattleDemoGenerator : MonoBehaviour
         enemyStatusUI.Initialize(enemy, "Enemy");
     }
 
-    private void CreateEndTurnButton(Canvas canvas, Encounter currentEncounter)
+    private void CreateEndTurnButton(Canvas canvas, Encounter currentEncounter, Sprite endTurnButtonSprite, Font uiFont)
     {
         GameObject buttonGO = new GameObject("EndTurnButton");
         buttonGO.transform.SetParent(canvas.transform, false);
@@ -308,10 +308,10 @@ public class BattleDemoGenerator : MonoBehaviour
         rect.anchoredPosition = new Vector2(-20, 20);
         rect.sizeDelta = new Vector2(160, 50);
 
-        CreateText(buttonGO, "ButtonText", "End Turn", 20, Vector2.zero);
+        CreateText(buttonGO, "ButtonText", "End Turn", 20, Vector2.zero, uiFont);
     }
 
-    private Text CreateText(GameObject parent, string name, string content, int fontSize, Vector2 position)
+    private Text CreateText(GameObject parent, string name, string content, int fontSize, Vector2 position, Font uiFont)
     {
         GameObject textGO = new GameObject(name);
         textGO.transform.SetParent(parent.transform, false);

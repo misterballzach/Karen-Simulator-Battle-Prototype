@@ -52,7 +52,7 @@ public class Combatant : MonoBehaviour
     {
         currentEmotionalStamina = maxEmotionalStamina;
         currentCredibility = maxCredibility;
-        characterSprite = GetComponent<SpriteRenderer>();
+        characterSprite = GetComponentInChildren<SpriteRenderer>();
         ShuffleLoadout();
     }
 

@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 public class AbilityCardUI : MonoBehaviour, IPointerClickHandler
 {
     [Header("UI References")]
+    public Image artworkImage;
     public Text nameText;
     public Text descriptionText;
     public Text costText;
@@ -20,9 +21,24 @@ public class AbilityCardUI : MonoBehaviour, IPointerClickHandler
         this.player = player;
         this.encounter = encounter;
 
+        // Populate the UI fields
         if (nameText != null) nameText.text = ability.name;
         if (descriptionText != null) descriptionText.text = ability.description;
         if (costText != null) costText.text = $"Cost: {ability.cost}";
+
+        // Set the artwork
+        if (artworkImage != null)
+        {
+            if (ability.artwork != null)
+            {
+                artworkImage.sprite = ability.artwork;
+                artworkImage.color = Color.white; // Make sure it's visible
+            }
+            else
+            {
+                artworkImage.color = Color.clear; // Hide the image if no artwork is assigned
+            }
+        }
     }
 
     public void OnPointerClick(PointerEventData eventData)

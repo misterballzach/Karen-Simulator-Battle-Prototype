@@ -30,13 +30,13 @@ public class ClassicKarenAI : AIProfile
                 // --- AI Scoring Logic ---
                 if (ability is DemandRefundAbility demand)
                 {
-                    currentScore = demand.emotionalDamage * 1.5f;
+                    currentScore = demand.damage * 1.5f;
                     if (potentialTarget.rhetoricalWeaknesses.Contains(ability.rhetoricalClass)) currentScore *= 2f;
-                    if (demand.emotionalDamage >= potentialTarget.currentEmotionalStamina) currentScore += 1000;
+                    if (demand.damage >= potentialTarget.currentEmotionalStamina) currentScore += 1000;
                 }
                 else if (ability is FakeCryAbility cry)
                 {
-                    currentScore = cry.staminaToRecover;
+                    currentScore = cry.healing;
                     if ((float)potentialTarget.currentEmotionalStamina / potentialTarget.maxEmotionalStamina < 0.4f) currentScore *= 3f;
                 }
                 else if (ability is ApplyStatusAbility status)

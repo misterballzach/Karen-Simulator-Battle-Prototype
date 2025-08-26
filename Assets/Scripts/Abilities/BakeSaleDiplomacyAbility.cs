@@ -36,7 +36,7 @@ public class BakeSaleDiplomacyAbility : VerbalAbility
         else
         {
             // Fallback for testing or edge cases
-            user.RecoverStamina(moraleRestoreAmount);
+            user.RecoverStamina(healing);
         }
     }
 }

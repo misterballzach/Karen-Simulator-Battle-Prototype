@@ -17,7 +17,7 @@ public class PoisonEffect : StatusEffect
         base.OnTurnStart();
         if (owner != null)
         {
-            owner.TakeDamage(damagePerTurn, Element.Neutral);
+            owner.TakeEmotionalDamage(damagePerTurn, RhetoricalClass.Neutral, null);
             Debug.Log($"{owner.name} takes {damagePerTurn} damage from poison.");
         }
     }

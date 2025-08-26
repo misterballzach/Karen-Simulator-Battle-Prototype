@@ -17,7 +17,7 @@ public class AbilityClickHandler : MonoBehaviour, IPointerClickHandler
         {
             // In a real game, a targeting system would be needed.
             // For now, assume the first enemy is the target for non-self-target abilities.
-            Combatant target = encounter.enemy;
+            Combatant target = encounter.enemyParty[0];
             // A more robust system would check the ability's intended target type.
 
             encounter.OnAbilityUsed(abilityData, target);

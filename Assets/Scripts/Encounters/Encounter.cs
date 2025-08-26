@@ -14,6 +14,7 @@ public class Encounter : MonoBehaviour
 
     private int currentPlayerIndex = 0;
     private int currentEnemyIndex = 0;
+    private bool isTurnEnding = false;
 
     public ArgumentHandUI playerHandUI;
     public ConsequenceList consequenceList;
@@ -72,6 +73,8 @@ public class Encounter : MonoBehaviour
 
     void StartPlayerTurn()
     {
+        isTurnEnding = false;
+
         // To-do: This needs to be per-combatant
         UpdateCooldowns(playerCooldowns);
 
@@ -91,6 +94,7 @@ public class Encounter : MonoBehaviour
 
     public void OnAbilityUsed(VerbalAbility ability, Combatant target)
     {
+        if (isTurnEnding) return;
         if (state != EncounterState.PlayerTurn) return;
         if (playerCooldowns.ContainsKey(ability))
         {
@@ -131,6 +135,7 @@ public class Encounter : MonoBehaviour
 
     public void OnEndTurnButton()
     {
+        if (isTurnEnding) return;
         if (state != EncounterState.PlayerTurn) return;
         if (AudioManager.Instance != null)
         {
@@ -141,6 +146,7 @@ public class Encounter : MonoBehaviour
 
     IEnumerator EndPlayerTurn()
     {
+        isTurnEnding = true;
         ActiveCombatant.OnTurnEnd();
         yield return new WaitForSeconds(1f);
 

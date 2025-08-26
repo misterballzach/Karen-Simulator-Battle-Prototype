@@ -5,16 +5,16 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638918091808962901
-    m_Hash: 1067063894
+      ticks: 638918110933439223
+    m_Hash: 1117635988
   m_LockFileStatus:
     m_FilePath: C:/Users/zacha/Documents/GitHub/Karen-Simulator-Battle-Prototype/Packages/packages-lock.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638918091808967909
-    m_Hash: 3973686020
+      ticks: 638918111061398673
+    m_Hash: 1740561633
 m_EmbeddedPackageManifests:
   m_ManifestsStatus: {}
 m_LocalPackages:
@@ -201,12 +201,12 @@ m_ResolvedPackages:
       scopePatternExpression: 
       message: 
       readMoreLink: 
-- packageId: com.unity.ads@4.4.2
+- packageId: com.unity.ads@4.12.0
   testable: 0
   isDirectDependency: 1
-  version: 4.4.2
+  version: 4.12.0
   source: 1
-  resolvedPath: C:\Users\zacha\Documents\GitHub\Karen-Simulator-Battle-Prototype\Library\PackageCache\com.unity.ads@a7b997f68a1d
+  resolvedPath: C:\Users\zacha\Documents\GitHub\Karen-Simulator-Battle-Prototype\Library\PackageCache\com.unity.ads@3bb3d269d51b
   assetPath: Packages/com.unity.ads
   name: com.unity.ads
   displayName: Advertisement Legacy
@@ -215,7 +215,7 @@ m_ResolvedPackages:
     email: 
     url: 
   category: 
-  type: asset
+  type: assets
   description: "Connect your game to the Unity Ads Network for iOS and Android to
     quickly and effectively monetize your games.\n\nNOTE: Unity has joined forces
     with ironSource and recommends using Unity LevelPlay for ad mediation (instead
@@ -308,13 +308,13 @@ m_ResolvedPackages:
   entitlements:
     licensingModel: 1
   isAssetStorePackage: 0
-  datePublishedTicks: 638161229410000000
-  documentationUrl: https://docs.unity3d.com/Packages/com.unity.ads@4.4/manual/index.html
+  datePublishedTicks: 638568068510000000
+  documentationUrl: https://docs.unity3d.com/Packages/com.unity.ads@4.12/manual/index.html
   hasRepository: 1
   repository:
     type: git
     url: https://github.com/Unity-Technologies/unity-ads-sdk.git
-    revision: 532b2db792ae728eedcc825080876b4e2c5f8544
+    revision: dbc3d4a1b92606adc83b8bc4c82672512154a792
     path: 
   unityLifecycle:
     version: 4.4.2
@@ -328,16 +328,20 @@ m_ResolvedPackages:
   git:
     hash: 
     revision: 
-  upmReserved: '{"changelog":"## **Unity**\n - Remove redirect pop-ups directing
-    users to Unity Mediation.\n## **Android**\n### **Bugfix**\n- Fixed a NullPointerException
-    when Application Context is null for cached directory file path.","gameService":{"groupName":"Monetization","groupIndex":4,"configurePath":"Project/Services/Ads","genericDashboardUrl":"https://unityads.unity3d.com/help/index","projectDashboardUrl":"https://dashboard.unity3d.com/organizations/{0}/projects/{1}/monetization/about","projectDashboardUrlType":"OrganizationKeyAndProjectGuid"},"supportedPlatforms":["Android","iOS"]}'
+  upmReserved: '{"changelog":"## **Unity**\n- Added support for the Apple Privacy
+    Manifest update to ensure publisher compliance with the App Store submission
+    requirements.\n- Added Java 8 as a minimum requirement for adding the Unity Ads
+    SDK to your project.\n- Increased banner demand.\n- Improved banner life cycle
+    performance.\n- Reduced network requests.\n- Removed the use of a deprecated
+    openURL method.\n- Fixed an issue with detecting location on certain iOS versions
+    for devices used in China.\n- Fixed multiple bugs and made improvements.","gameService":{"groupName":"Monetization","groupIndex":4,"configurePath":"Project/Services/Ads","genericDashboardUrl":"https://unityads.unity3d.com/help/index","projectDashboardUrl":"https://dashboard.unity3d.com/organizations/{0}/projects/{1}/monetization/about","projectDashboardUrlType":"OrganizationKeyAndProjectGuid"},"supportedPlatforms":["Android","iOS"]}'
   assetStore:
     productId: 
-  fingerprint: a7b997f68a1d40387ca4d33fc75578709c140a37
+  fingerprint: 3bb3d269d51b1ced8f6f203c98bb025578933edd
   editorCompatibility:
     compatibilityLevel: 0
     minimumPackageVersion: 4.4.2
-    minimumUnityVersion: 2018.4.18f1
+    minimumUnityVersion: 2021.3.0a1
   compliance:
     status: 0
     violation:
@@ -461,144 +465,6 @@ m_ResolvedPackages:
     compatibilityLevel: 0
     minimumPackageVersion: 2.0.8
     minimumUnityVersion: 6000.0.0a1
-  compliance:
-    status: 0
-    violation:
-      scopePatternExpression: 
-      message: 
-      readMoreLink: 
-- packageId: com.unity.analytics@3.8.1
-  testable: 0
-  isDirectDependency: 1
-  version: 3.8.1
-  source: 1
-  resolvedPath: C:\Users\zacha\Documents\GitHub\Karen-Simulator-Battle-Prototype\Library\PackageCache\com.unity.analytics@6cc66d58ac08
-  assetPath: Packages/com.unity.analytics
-  name: com.unity.analytics
-  displayName: Analytics Library
-  author:
-    name: 
-    email: 
-    url: 
-  category: 
-  type: asset
-  description: The Unity Analytics Library contains the Analytics Event Tracker component,
-    the Data Privacy plug-in, and the Standard Events API.
-  errors: []
-  versions:
-    all:
-    - 0.0.3
-    - 0.0.4
-    - 0.0.5
-    - 0.0.7
-    - 0.0.8
-    - 0.0.9
-    - 0.0.10
-    - 0.0.11
-    - 0.0.12
-    - 0.0.13
-    - 0.0.14
-    - 0.0.15
-    - 0.0.16
-    - 0.0.17
-    - 0.0.19
-    - 2.0.5
-    - 2.0.11
-    - 2.0.13
-    - 2.0.14
-    - 2.0.15
-    - 2.0.16
-    - 3.0.5
-    - 3.0.9
-    - 3.1.1
-    - 3.2.0
-    - 3.2.2
-    - 3.2.3
-    - 3.3.0
-    - 3.3.2-preview
-    - 3.3.2
-    - 3.3.4
-    - 3.3.5
-    - 3.4.0
-    - 3.5.3
-    - 3.6.11
-    - 3.6.12
-    - 3.7.1
-    - 3.8.1
-    compatible:
-    - 3.8.1
-    recommended: 3.8.1
-    deprecated: []
-  dependencies:
-  - name: com.unity.ugui
-    version: 1.0.0
-  - name: com.unity.services.analytics
-    version: 1.0.4
-  resolvedDependencies:
-  - name: com.unity.ugui
-    version: 2.0.0
-  - name: com.unity.modules.ui
-    version: 1.0.0
-  - name: com.unity.modules.imgui
-    version: 1.0.0
-  - name: com.unity.services.analytics
-    version: 6.1.0
-  - name: com.unity.services.core
-    version: 1.14.0
-  - name: com.unity.modules.androidjni
-    version: 1.0.0
-  - name: com.unity.nuget.newtonsoft-json
-    version: 3.2.1
-  - name: com.unity.modules.unitywebrequest
-    version: 1.0.0
-  - name: com.unity.modules.jsonserialize
-    version: 1.0.0
-  keywords:
-  - analytics
-  - unity
-  registry:
-    id: main
-    name: 
-    url: https://packages.unity.com
-    scopes: []
-    isDefault: 1
-    capabilities: 7
-    configSource: 0
-    compliance:
-      status: 0
-      violations: []
-  hideInEditor: 1
-  entitlements:
-    licensingModel: 1
-  isAssetStorePackage: 0
-  datePublishedTicks: 637789683740000000
-  documentationUrl: 
-  hasRepository: 1
-  repository:
-    type: git
-    url: https://github.cds.internal.unity3d.com/unity/com.unity.analytics.git
-    revision: 5ed31de2d0dd150fe8c907e98fc467da73b4b978
-    path: 
-  unityLifecycle:
-    version: 3.8.1
-    nextVersion: 
-    recommendedVersion: 
-    isDeprecated: 0
-    deprecationMessage: 
-    isDiscoverable: 0
-  isDeprecated: 0
-  deprecationMessage: 
-  git:
-    hash: 
-    revision: 
-  upmReserved: 
-  assetStore:
-    productId: 
-  fingerprint: 6cc66d58ac08950316d3b86a26c92187aca1ddb0
-  editorCompatibility:
-    compatibilityLevel: 0
-    minimumPackageVersion: 3.8.1
-    minimumUnityVersion: 2019.3.0a1
   compliance:
     status: 0
     violation:
@@ -1122,12 +988,12 @@ m_ResolvedPackages:
       scopePatternExpression: 
       message: 
       readMoreLink: 
-- packageId: com.unity.purchasing@4.12.2
+- packageId: com.unity.purchasing@4.13.0
   testable: 0
   isDirectDependency: 1
-  version: 4.12.2
+  version: 4.13.0
   source: 1
-  resolvedPath: C:\Users\zacha\Documents\GitHub\Karen-Simulator-Battle-Prototype\Library\PackageCache\com.unity.purchasing@649c6c7b3b1b
+  resolvedPath: C:\Users\zacha\Documents\GitHub\Karen-Simulator-Battle-Prototype\Library\PackageCache\com.unity.purchasing@f0b6c9dee9b9
   assetPath: Packages/com.unity.purchasing
   name: com.unity.purchasing
   displayName: In App Purchasing
@@ -1136,7 +1002,7 @@ m_ResolvedPackages:
     email: 
     url: 
   category: 
-  type: assets
+  type: 
   description: "IMPORTANT UPGRADE NOTES:\n\nIf updating from Unity IAP (com.unity.purchasing
     + the Asset Store plugin) versions 2.x to version 3.x, complete the following
     actions in order to resolve compilation errors:\n 1. Move IAPProductCatalog.json
@@ -1297,13 +1163,13 @@ m_ResolvedPackages:
   entitlements:
     licensingModel: 1
   isAssetStorePackage: 0
-  datePublishedTicks: 638568999980000000
-  documentationUrl: https://docs.unity3d.com/Packages/com.unity.purchasing@4.12/manual/index.html
+  datePublishedTicks: 638877336488130000
+  documentationUrl: https://docs.unity3d.com/Packages/com.unity.purchasing@4.13/manual/index.html
   hasRepository: 1
   repository:
     type: git
     url: https://github.cds.internal.unity3d.com/unity/com.unity.purchasing.git
-    revision: c838a7aeadc3894237ebf677be7d5d7d197e1e4d
+    revision: 9ed15fceb98bb4bf922d7c62876ff4fa295371fc
     path: 
   unityLifecycle:
     version: 4.12.2
@@ -1317,16 +1183,165 @@ m_ResolvedPackages:
   git:
     hash: 
     revision: 
-  upmReserved: '{"changelog":"### Fixed\n- GooglePlay - Fixed `Product.receipt`''s
-    `price_amount_micros` returning a string instead of a long.","gameService":{"groupName":"Monetize","groupIndex":4,"configurePath":"Project/Services/In-App
-    Purchasing","genericDashboardUrl":"https://dashboard.unity3d.com/","projectDashboardUrl":"https://dashboard.unity3d.com/organizations/{0}/projects/{1}/analytics/v2/dashboards/revenue","projectDashboardUrlType":"OrganizationKeyAndProjectGuid"},"supportedPlatforms":["Android","iOS"]}'
+  upmReserved: '{"changelog":"### Changed\n- GooglePlay - Billing Library updated
+    to 7.1.1 (was previously 6.2.1). No new feature support was added.\n- GooglePlay
+    - `GooglePlayProrationMode` has been replaced with `GooglePlayReplacementMode`
+    to match the Google Play Billing Library.\n  - `GooglePlayProrationMode` has
+    been marked `[Obsolete]`","gameService":{"groupName":"Monetize","groupIndex":4,"configurePath":"Project/Services/In-App
+    Purchasing","genericDashboardUrl":"https://dashboard.unity3d.com/","projectDashboardUrl":"https://dashboard.unity3d.com/organizations/{0}/projects/{1}/analytics/v2/dashboards/revenue","projectDashboardUrlType":"OrganizationKeyAndProjectGuid"}}'
   assetStore:
     productId: 
-  fingerprint: 649c6c7b3b1b6277839041f4987c0a1e66176678
+  fingerprint: f0b6c9dee9b94c70a36061f31deeb29d834cf092
   editorCompatibility:
     compatibilityLevel: 0
     minimumPackageVersion: 4.12.2
     minimumUnityVersion: 2020.3.0a1
+  compliance:
+    status: 0
+    violation:
+      scopePatternExpression: 
+      message: 
+      readMoreLink: 
+- packageId: com.unity.services.analytics@6.1.0
+  testable: 0
+  isDirectDependency: 1
+  version: 6.1.0
+  source: 1
+  resolvedPath: C:\Users\zacha\Documents\GitHub\Karen-Simulator-Battle-Prototype\Library\PackageCache\com.unity.services.analytics@10a9ca5d5622
+  assetPath: Packages/com.unity.services.analytics
+  name: com.unity.services.analytics
+  displayName: Analytics
+  author:
+    name: 
+    email: 
+    url: 
+  category: 
+  type: 
+  description: The Unity Analytics package automatically collects core events and
+    user properties when someone uses your game or application, and enables you to
+    track specific in-game actions your user performs by defining custom events.
+    The data collected from this package is surfaced in the Unity dashboard where
+    you can use it to gather user insights, segment your player base and make informed
+    decisions around the optimization of your game.
+  errors: []
+  versions:
+    all:
+    - 1.0.3
+    - 1.0.4
+    - 1.0.5
+    - 2.0.7-pre.4
+    - 2.0.7-pre.6
+    - 2.0.7-pre.7
+    - 3.0.0-pre.2
+    - 3.0.0-pre.3
+    - 3.0.0-pre.4
+    - 4.0.0-pre.2
+    - 4.0.0-pre.3
+    - 4.0.0
+    - 4.0.1
+    - 4.1.0
+    - 4.2.0
+    - 4.3.0
+    - 4.4.0
+    - 4.4.1
+    - 4.4.2
+    - 5.0.0
+    - 5.0.1
+    - 5.0.2
+    - 5.1.0
+    - 5.1.1
+    - 6.0.1
+    - 6.0.2
+    - 6.0.3
+    - 6.1.0
+    compatible:
+    - 6.1.0
+    recommended: 6.1.0
+    deprecated: []
+  dependencies:
+  - name: com.unity.ugui
+    version: 1.0.0
+  - name: com.unity.services.core
+    version: 1.12.4
+  - name: com.unity.modules.jsonserialize
+    version: 1.0.0
+  resolvedDependencies:
+  - name: com.unity.ugui
+    version: 2.0.0
+  - name: com.unity.modules.ui
+    version: 1.0.0
+  - name: com.unity.modules.imgui
+    version: 1.0.0
+  - name: com.unity.services.core
+    version: 1.14.0
+  - name: com.unity.modules.androidjni
+    version: 1.0.0
+  - name: com.unity.nuget.newtonsoft-json
+    version: 3.2.1
+  - name: com.unity.modules.unitywebrequest
+    version: 1.0.0
+  - name: com.unity.modules.jsonserialize
+    version: 1.0.0
+  keywords: []
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+    compliance:
+      status: 0
+      violations: []
+  hideInEditor: 1
+  entitlements:
+    licensingModel: 1
+  isAssetStorePackage: 0
+  datePublishedTicks: 638865241437490000
+  documentationUrl: https://docs.unity3d.com/Packages/com.unity.services.analytics@6.1/manual/index.html
+  hasRepository: 1
+  repository:
+    type: git
+    url: https://github.cds.internal.unity3d.com/unity/operate-services-sdk.git
+    revision: 356d6526df4ad57bf4f39183e900f575cee0ed53
+    path: 
+  unityLifecycle:
+    version: 6.1.0
+    nextVersion: 
+    recommendedVersion: 6.1.0
+    isDeprecated: 0
+    deprecationMessage: 
+    isDiscoverable: 1
+  isDeprecated: 0
+  deprecationMessage: 
+  git:
+    hash: 
+    revision: 
+  upmReserved: '{"changelog":"### Added\n\n* Support for the Developer Data framework
+    in Unity 6.2 and above\n  * This supersedes the StartDataCollection and StopDataCollection
+    methods, which are deprecated in Unity 6.2 and above (they are not deprecated
+    in earlier editor versions that do not have the new EndUserConsent APIs)\n  *
+    In order to start and stop data collection, you must now use EndUserConsent.SetConsentState(...)
+    to grant or deny consent for AnalyticsIntent\n  * In order to request data deletion,
+    you must still use the SDK''s RequestDataDeletion method, but you must first
+    explicitly deny consent using the EndUserConsent API\n  * If consent has already
+    been granted, data collection will start automatically during UnityServices.InitializeAsync().
+    Otherwise, data collection will start when consent is granted\n  * When you start
+    using the EndUserConsent API, the SDK will throw exceptions if you attempt to
+    use methods from the original workflow. The two approaches cannot be mixed\n 
+    * Please see the migration guide for more information: https://docs.unity.com/ugs/en-us/manual/analytics/manual/sdk61-migration-guide\n\n###
+    Fixed\n\n* Updated the Debug Panel to use a new UIToolkit method in Unity 6.2
+    and above to prevent a deprecation warning\n* The two acquisitionSource event
+    buttons in the Standard Events sample now call the correct methods","gameService":{"configurePath":"Project/Services/Analytics
+    - Gaming Services","genericDashboardUrl":"https://cloud.unity.com/analytics","projectDashboardUrl":"https://cloud.unity.com/home/organizations/{0}/projects/{1}/environments/default/analytics/v2/about","projectDashboardUrlType":"OrganizationKeyAndProjectGuid"}}'
+  assetStore:
+    productId: 
+  fingerprint: 10a9ca5d56226d26b71614c3ee36a91aaa253b96
+  editorCompatibility:
+    compatibilityLevel: 0
+    minimumPackageVersion: 6.1.0
+    minimumUnityVersion: 2021.3.0a1
   compliance:
     status: 0
     violation:
@@ -4813,152 +4828,6 @@ m_ResolvedPackages:
   editorCompatibility:
     compatibilityLevel: 0
     minimumPackageVersion: 1.14.0
-    minimumUnityVersion: 2021.3.0a1
-  compliance:
-    status: 0
-    violation:
-      scopePatternExpression: 
-      message: 
-      readMoreLink: 
-- packageId: com.unity.services.analytics@6.1.0
-  testable: 0
-  isDirectDependency: 0
-  version: 6.1.0
-  source: 1
-  resolvedPath: C:\Users\zacha\Documents\GitHub\Karen-Simulator-Battle-Prototype\Library\PackageCache\com.unity.services.analytics@10a9ca5d5622
-  assetPath: Packages/com.unity.services.analytics
-  name: com.unity.services.analytics
-  displayName: Analytics
-  author:
-    name: 
-    email: 
-    url: 
-  category: 
-  type: 
-  description: The Unity Analytics package automatically collects core events and
-    user properties when someone uses your game or application, and enables you to
-    track specific in-game actions your user performs by defining custom events.
-    The data collected from this package is surfaced in the Unity dashboard where
-    you can use it to gather user insights, segment your player base and make informed
-    decisions around the optimization of your game.
-  errors: []
-  versions:
-    all:
-    - 1.0.3
-    - 1.0.4
-    - 1.0.5
-    - 2.0.7-pre.4
-    - 2.0.7-pre.6
-    - 2.0.7-pre.7
-    - 3.0.0-pre.2
-    - 3.0.0-pre.3
-    - 3.0.0-pre.4
-    - 4.0.0-pre.2
-    - 4.0.0-pre.3
-    - 4.0.0
-    - 4.0.1
-    - 4.1.0
-    - 4.2.0
-    - 4.3.0
-    - 4.4.0
-    - 4.4.1
-    - 4.4.2
-    - 5.0.0
-    - 5.0.1
-    - 5.0.2
-    - 5.1.0
-    - 5.1.1
-    - 6.0.1
-    - 6.0.2
-    - 6.0.3
-    - 6.1.0
-    compatible:
-    - 6.1.0
-    recommended: 6.1.0
-    deprecated: []
-  dependencies:
-  - name: com.unity.ugui
-    version: 1.0.0
-  - name: com.unity.services.core
-    version: 1.12.4
-  - name: com.unity.modules.jsonserialize
-    version: 1.0.0
-  resolvedDependencies:
-  - name: com.unity.ugui
-    version: 2.0.0
-  - name: com.unity.modules.ui
-    version: 1.0.0
-  - name: com.unity.modules.imgui
-    version: 1.0.0
-  - name: com.unity.services.core
-    version: 1.14.0
-  - name: com.unity.modules.androidjni
-    version: 1.0.0
-  - name: com.unity.nuget.newtonsoft-json
-    version: 3.2.1
-  - name: com.unity.modules.unitywebrequest
-    version: 1.0.0
-  - name: com.unity.modules.jsonserialize
-    version: 1.0.0
-  keywords: []
-  registry:
-    id: main
-    name: 
-    url: https://packages.unity.com
-    scopes: []
-    isDefault: 1
-    capabilities: 7
-    configSource: 0
-    compliance:
-      status: 0
-      violations: []
-  hideInEditor: 1
-  entitlements:
-    licensingModel: 1
-  isAssetStorePackage: 0
-  datePublishedTicks: 638865241437490000
-  documentationUrl: https://docs.unity3d.com/Packages/com.unity.services.analytics@6.1/manual/index.html
-  hasRepository: 1
-  repository:
-    type: git
-    url: https://github.cds.internal.unity3d.com/unity/operate-services-sdk.git
-    revision: 356d6526df4ad57bf4f39183e900f575cee0ed53
-    path: 
-  unityLifecycle:
-    version: 6.1.0
-    nextVersion: 
-    recommendedVersion: 6.1.0
-    isDeprecated: 0
-    deprecationMessage: 
-    isDiscoverable: 1
-  isDeprecated: 0
-  deprecationMessage: 
-  git:
-    hash: 
-    revision: 
-  upmReserved: '{"changelog":"### Added\n\n* Support for the Developer Data framework
-    in Unity 6.2 and above\n  * This supersedes the StartDataCollection and StopDataCollection
-    methods, which are deprecated in Unity 6.2 and above (they are not deprecated
-    in earlier editor versions that do not have the new EndUserConsent APIs)\n  *
-    In order to start and stop data collection, you must now use EndUserConsent.SetConsentState(...)
-    to grant or deny consent for AnalyticsIntent\n  * In order to request data deletion,
-    you must still use the SDK''s RequestDataDeletion method, but you must first
-    explicitly deny consent using the EndUserConsent API\n  * If consent has already
-    been granted, data collection will start automatically during UnityServices.InitializeAsync().
-    Otherwise, data collection will start when consent is granted\n  * When you start
-    using the EndUserConsent API, the SDK will throw exceptions if you attempt to
-    use methods from the original workflow. The two approaches cannot be mixed\n 
-    * Please see the migration guide for more information: https://docs.unity.com/ugs/en-us/manual/analytics/manual/sdk61-migration-guide\n\n###
-    Fixed\n\n* Updated the Debug Panel to use a new UIToolkit method in Unity 6.2
-    and above to prevent a deprecation warning\n* The two acquisitionSource event
-    buttons in the Standard Events sample now call the correct methods","gameService":{"configurePath":"Project/Services/Analytics
-    - Gaming Services","genericDashboardUrl":"https://cloud.unity.com/analytics","projectDashboardUrl":"https://cloud.unity.com/home/organizations/{0}/projects/{1}/environments/default/analytics/v2/about","projectDashboardUrlType":"OrganizationKeyAndProjectGuid"}}'
-  assetStore:
-    productId: 
-  fingerprint: 10a9ca5d56226d26b71614c3ee36a91aaa253b96
-  editorCompatibility:
-    compatibilityLevel: 0
-    minimumPackageVersion: 6.1.0
     minimumUnityVersion: 2021.3.0a1
   compliance:
     status: 0

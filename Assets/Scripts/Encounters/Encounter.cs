@@ -132,6 +132,10 @@ public class Encounter : MonoBehaviour
     public void OnEndTurnButton()
     {
         if (state != EncounterState.PlayerTurn) return;
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySwitchSound();
+        }
         StartCoroutine(EndPlayerTurn());
     }
 

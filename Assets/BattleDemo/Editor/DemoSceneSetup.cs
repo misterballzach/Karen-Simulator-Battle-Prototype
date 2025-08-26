@@ -5,7 +5,7 @@ using UnityEditor.SceneManagement;
 public class DemoSceneSetup
 {
     private const string DEMO_SCENE_PATH = "Assets/BattleDemo/BattleDemoScene.unity";
-    private const string SPRITE_PATH = "Assets/BattleDemo/hecomi-base.png";
+    private const string SPRITE_PATH = "Assets/BattleDemo/character_sprite.png";
 
     [MenuItem("Karen Simulator/Setup Battle Demo Scene")]
     public static void SetupScene()

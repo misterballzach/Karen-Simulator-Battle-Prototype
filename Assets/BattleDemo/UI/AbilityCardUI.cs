@@ -64,6 +64,7 @@ public class AbilityCardUI : MonoBehaviour, IPointerClickHandler
 
         if (target != null)
         {
+            AudioManager.Instance.PlayClickSound();
             encounter.OnAbilityUsed(ability, target);
         }
         else

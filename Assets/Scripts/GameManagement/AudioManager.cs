@@ -12,11 +12,13 @@ public class AudioManager : MonoBehaviour
     public AudioClip backgroundMusic;
     public AudioClip clickSound;
     public AudioClip switchSound;
+    public AudioClip takeDamageSound;
 
     [Header("Asset Paths")]
     public string backgroundMusicPath = "Audio/Music/Audio/Pizzicato jingles/jingles_PIZZI00";
     public string clickSoundPath = "Audio/UI/Audio/click1";
     public string switchSoundPath = "Audio/UI/Audio/switch1";
+    public string takeDamageSoundPath = "Audio/UI/Audio/damage";
 
     private void Awake()
     {
@@ -42,6 +44,7 @@ public class AudioManager : MonoBehaviour
         backgroundMusic = Resources.Load<AudioClip>(backgroundMusicPath);
         clickSound = Resources.Load<AudioClip>(clickSoundPath);
         switchSound = Resources.Load<AudioClip>(switchSoundPath);
+        takeDamageSound = Resources.Load<AudioClip>(takeDamageSoundPath);
     }
 
     public void PlayMusic(AudioClip clip)
@@ -70,5 +73,10 @@ public class AudioManager : MonoBehaviour
     public void PlaySwitchSound()
     {
         PlaySoundEffect(switchSound);
+    }
+
+    public void PlayTakeDamageSound()
+    {
+        PlaySoundEffect(takeDamageSound);
     }
 }

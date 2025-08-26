@@ -94,6 +94,11 @@ public class Combatant : MonoBehaviour
 
         if (currentEmotionalStamina < 0) currentEmotionalStamina = 0;
         Debug.Log($"{name} took {damageToHealth} emotional damage ({damageToArmor} absorbed by armor).");
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayTakeDamageSound();
+        }
     }
 
     public void RecoverStamina(int amount)

@@ -15,6 +15,7 @@ public class AbilityClickHandler : MonoBehaviour, IPointerClickHandler
     {
         if (encounter != null && encounter.state == EncounterState.PlayerTurn)
         {
+            AudioManager.Instance.PlayClickSound();
             // In a real game, a targeting system would be needed.
             // For now, assume the first enemy is the target for non-self-target abilities.
             Combatant target = encounter.enemyParty[0];

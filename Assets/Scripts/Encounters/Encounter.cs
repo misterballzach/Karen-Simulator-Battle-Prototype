@@ -1,9 +1,9 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 public enum EncounterState { Start, PlayerTurn, EnemyTurn, Won, Lost, Reward }
-
-using System.Collections.Generic;
 
 public class Encounter : MonoBehaviour
 {
@@ -23,14 +23,38 @@ public class Encounter : MonoBehaviour
     private Dictionary<VerbalAbility, int> playerCooldowns = new Dictionary<VerbalAbility, int>();
     private Dictionary<VerbalAbility, int> enemyCooldowns = new Dictionary<VerbalAbility, int>();
 
-    public Combatant ActiveCombatant => state == EncounterState.PlayerTurn ? playerParty[currentPlayerIndex] : enemyParty[currentEnemyIndex];
+    public Combatant ActiveCombatant
+    {
+        get
+        {
+            if (state == EncounterState.PlayerTurn)
+            {
+                if (playerParty == null || playerParty.Count <= currentPlayerIndex) return null;
+                return playerParty[currentPlayerIndex];
+            }
+            else
+            {
+                if (enemyParty == null || enemyParty.Count <= currentEnemyIndex) return null;
+                return enemyParty[currentEnemyIndex];
+            }
+        }
+    }
 
     [HideInInspector]
     public bool isViral = false;
 
     public EncounterState state;
+    public bool autoStart = true;
 
     void Start()
+    {
+        if (autoStart)
+        {
+            BeginEncounter();
+        }
+    }
+
+    public void BeginEncounter()
     {
         state = EncounterState.Start;
         StartCoroutine(SetupEncounter());
@@ -38,6 +62,12 @@ public class Encounter : MonoBehaviour
 
     IEnumerator SetupEncounter()
     {
+        if (playerParty == null || enemyParty == null)
+        {
+            Debug.LogError("Encounter parties are not set up!");
+            yield break;
+        }
+
         // Set the encounter reference for all combatants
         foreach (var combatant in playerParty) combatant.currentEncounter = this;
         foreach (var combatant in enemyParty) combatant.currentEncounter = this;
@@ -61,7 +91,10 @@ public class Encounter : MonoBehaviour
             for (int i = 0; i < 3; i++) combatant.PrepareArgument();
         }
 
-        playerHandUI.UpdateHandUI(); // This will need to be updated to show the active player's hand
+        if (playerHandUI != null)
+        {
+            playerHandUI.UpdateHandUI(); // This will need to be updated to show the active player's hand
+        }
 
         yield return new WaitForSeconds(1f);
 
@@ -84,7 +117,10 @@ public class Encounter : MonoBehaviour
 
         // The UI needs to be aware of which player is active
         // playerHandUI.SetTarget(ActiveCombatant); // Imagined method
-        playerHandUI.UpdateHandUI();
+        if (playerHandUI != null)
+        {
+            playerHandUI.UpdateHandUI();
+        }
         Debug.Log($"{ActiveCombatant.name}'s turn.");
     }
 
@@ -119,7 +155,10 @@ public class Encounter : MonoBehaviour
             {
                 playerCooldowns[ability] = ability.cooldown;
             }
-            playerHandUI.UpdateHandUI();
+            if (playerHandUI != null)
+            {
+                playerHandUI.UpdateHandUI();
+            }
             StartCoroutine(EndPlayerTurn());
         }
         else

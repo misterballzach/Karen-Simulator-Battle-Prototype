@@ -7,37 +7,37 @@ public class BattleDemoGenerator : MonoBehaviour
 {
     [Header("Assets (Drag from Project)")]
     public Sprite combatantSprite;
-    public Font uiFont; // Optional: for better text rendering
+    public Font uiFont;
 
-    private Encounter encounter;
+    private DemoArgumentHandUI handUI;
+    private Combatant player;
 
     void Start()
     {
         // --- Create Core Systems ---
         CreateEventSystem();
         Canvas canvas = CreateCanvas();
-        GameObject encounterGO = new GameObject("EncounterManager");
-        encounter = encounterGO.AddComponent<Encounter>();
+        Encounter encounter = CreateEncounter();
 
         // --- Create Abilities and AI ---
         QuickRetortAbility quickRetort = ScriptableObject.CreateInstance<QuickRetortAbility>();
         quickRetort.name = "Quick Retort";
-        quickRetort.description = "A swift, cutting remark.";
+        quickRetort.description = "A swift, cutting remark that deals 20 damage.";
         quickRetort.cost = 10;
         quickRetort.damage = 20;
         quickRetort.rhetoricalClass = RhetoricalClass.Aggression;
 
         DefensiveStanceAbility defensiveStance = ScriptableObject.CreateInstance<DefensiveStanceAbility>();
         defensiveStance.name = "Defensive Stance";
-        defensiveStance.description = "Brace for impact.";
+        defensiveStance.description = "Brace for impact, gaining 15 armor.";
         defensiveStance.cost = 10;
         defensiveStance.armorGain = 15;
         defensiveStance.rhetoricalClass = RhetoricalClass.Vulnerability;
 
         DemoEnemyAI enemyAI = ScriptableObject.CreateInstance<DemoEnemyAI>();
 
-        // --- Create Combatants ---
-        Combatant player = CreateCombatant("Player", new Vector3(-3, 0, 0), Faction.Player);
+        // --- Create and Configure Combatants ---
+        this.player = CreateCombatant("Player", new Vector3(-3, 0, 0), Faction.Player);
         player.verbalLoadout = new List<VerbalAbility> { quickRetort, defensiveStance, quickRetort, defensiveStance, quickRetort };
 
         Combatant enemy = CreateCombatant("Enemy", new Vector3(3, 0, 0), Faction.Enemy);
@@ -51,15 +51,44 @@ public class BattleDemoGenerator : MonoBehaviour
         enemy.currentEncounter = encounter;
 
         // --- Create UI ---
-        ArgumentHandUI handUI = CreateArgumentHandUI(canvas, player, encounter);
-        encounter.playerHandUI = handUI;
+        this.handUI = CreateArgumentHandUI(canvas, player, encounter);
         CreateStatusUI(canvas, player, enemy);
         CreateEndTurnButton(canvas, encounter);
+
+        // --- Final Initialization Step ---
+        player.Initialize();
+        enemy.Initialize();
+
+        // Manually start the encounter now that everything is linked
+        encounter.BeginEncounter();
 
         Debug.Log("Battle Demo Generated. Starting encounter...");
     }
 
+    // This is a simple polling mechanism for the demo. A more advanced implementation
+    // would use events to trigger UI updates, but this is clear and effective for the demo.
+    void Update()
+    {
+        if (handUI != null && player != null)
+        {
+            // If the number of card objects in the UI doesn't match the number
+            // of prepared arguments in the player's hand, redraw the hand.
+            if (handUI.transform.childCount != player.preparedArguments.Count)
+            {
+                handUI.UpdateHand();
+            }
+        }
+    }
+
     // --- Helper Methods for Creation ---
+
+    private Encounter CreateEncounter()
+    {
+        GameObject encounterGO = new GameObject("EncounterManager");
+        Encounter encounter = encounterGO.AddComponent<Encounter>();
+        encounter.autoStart = false; // We will start it manually
+        return encounter;
+    }
 
     private Combatant CreateCombatant(string name, Vector3 position, Faction faction)
     {
@@ -98,9 +127,8 @@ public class BattleDemoGenerator : MonoBehaviour
         }
     }
 
-    private ArgumentHandUI CreateArgumentHandUI(Canvas canvas, Combatant player, Encounter currentEncounter)
+    private DemoArgumentHandUI CreateArgumentHandUI(Canvas canvas, Combatant player, Encounter encounter)
     {
-        // Hand Container
         GameObject handContainerGO = new GameObject("HandContainer");
         handContainerGO.transform.SetParent(canvas.transform, false);
         RectTransform handRect = handContainerGO.AddComponent<RectTransform>();
@@ -113,69 +141,56 @@ public class BattleDemoGenerator : MonoBehaviour
         HorizontalLayoutGroup layout = handContainerGO.AddComponent<HorizontalLayoutGroup>();
         layout.spacing = 10;
         layout.childAlignment = TextAnchor.MiddleCenter;
-        layout.childControlWidth = false;
-        layout.childControlHeight = false;
 
-        ArgumentHandUI handUI = handContainerGO.AddComponent<ArgumentHandUI>();
-        handUI.player = player;
+        DemoArgumentHandUI handUI = handContainerGO.AddComponent<DemoArgumentHandUI>();
 
-        // Create the card "prefab" template
-        GameObject cardTemplate = new GameObject("CardTemplate");
+        GameObject cardTemplate = new GameObject("CardTemplate", typeof(RectTransform));
         cardTemplate.transform.SetParent(handContainerGO.transform);
         cardTemplate.AddComponent<Image>();
-        RectTransform cardRect = cardTemplate.GetComponent<RectTransform>();
-        cardRect.sizeDelta = new Vector2(120, 150);
+        cardTemplate.GetComponent<RectTransform>().sizeDelta = new Vector2(120, 150);
 
-        // Add UI elements to the card template
         Text nameText = CreateText(cardTemplate, "NameText", "Ability Name", 14, new Vector2(0, 60));
         Text descText = CreateText(cardTemplate, "DescriptionText", "Description", 10, new Vector2(0, 0));
         Text costText = CreateText(cardTemplate, "CostText", "Cost: X", 12, new Vector2(0, -60));
 
-        // Add the controller script and set up its references
         AbilityCardUI cardUI = cardTemplate.AddComponent<AbilityCardUI>();
         cardUI.nameText = nameText;
         cardUI.descriptionText = descText;
         cardUI.costText = costText;
 
-        handUI.abilityPrefab = cardTemplate;
-        cardTemplate.SetActive(false); // Deactivate the template
-
-        // Override the UpdateHandUI to use our custom setup
-        handUI.gameObject.AddComponent<CustomHandUIUpdater>().Setup(handUI, player, currentEncounter, cardTemplate);
+        handUI.cardPrefabTemplate = cardTemplate;
+        handUI.Setup(player, encounter);
+        cardTemplate.SetActive(false);
 
         return handUI;
     }
 
     private void CreateStatusUI(Canvas canvas, Combatant player, Combatant enemy)
     {
-        // Player Status
-        GameObject playerStatusGO = new GameObject("PlayerStatus");
+        GameObject playerStatusGO = new GameObject("PlayerStatus", typeof(RectTransform));
         playerStatusGO.transform.SetParent(canvas.transform, false);
-        RectTransform playerRect = playerStatusGO.AddComponent<RectTransform>();
-        playerRect.anchorMin = new Vector2(0, 1);
-        playerRect.anchorMax = new Vector2(0, 1);
-        playerRect.pivot = new Vector2(0, 1);
-        playerRect.anchoredPosition = new Vector2(20, -20);
-        playerStatusGO.AddComponent<CombatantStatusUI>().Initialize(player, "Player");
+        playerStatusGO.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
+        playerStatusGO.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
+        playerStatusGO.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
+        playerStatusGO.GetComponent<RectTransform>().anchoredPosition = new Vector2(20, -20);
+        playerStatusGO.AddComponent<CombatantStatusUI>().Initialize(player, "Player", uiFont);
 
-        // Enemy Status
-        GameObject enemyStatusGO = new GameObject("EnemyStatus");
+        GameObject enemyStatusGO = new GameObject("EnemyStatus", typeof(RectTransform));
         enemyStatusGO.transform.SetParent(canvas.transform, false);
-        RectTransform enemyRect = enemyStatusGO.AddComponent<RectTransform>();
-        enemyRect.anchorMin = new Vector2(1, 1);
-        enemyRect.anchorMax = new Vector2(1, 1);
-        enemyRect.pivot = new Vector2(1, 1);
-        enemyRect.anchoredPosition = new Vector2(-20, -20);
-        enemyStatusGO.AddComponent<CombatantStatusUI>().Initialize(enemy, "Enemy");
+        enemyStatusGO.GetComponent<RectTransform>().anchorMin = new Vector2(1, 1);
+        enemyStatusGO.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+        enemyStatusGO.GetComponent<RectTransform>().pivot = new Vecto`r2(1, 1);
+        enemyStatusGO.GetComponent<RectTransform>().anchoredPosition = new Vector2(-20, -20);
+        enemyStatusGO.AddComponent<CombatantStatusUI>().Initialize(enemy, "Enemy", uiFont);
     }
 
-    private void CreateEndTurnButton(Canvas canvas, Encounter currentEncounter)
+    private void CreateEndTurnButton(Canvas canvas, Encounter encounter)
     {
-        GameObject buttonGO = new GameObject("EndTurnButton");
+        GameObject buttonGO = new GameObject("EndTurnButton", typeof(RectTransform));
         buttonGO.transform.SetParent(canvas.transform, false);
         buttonGO.AddComponent<Image>();
         Button button = buttonGO.AddComponent<Button>();
-        button.onClick.AddListener(currentEncounter.OnEndTurnButton);
+        button.onClick.AddListener(encounter.OnEndTurnButton);
 
         RectTransform rect = buttonGO.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(1, 0);
@@ -189,7 +204,7 @@ public class BattleDemoGenerator : MonoBehaviour
 
     private Text CreateText(GameObject parent, string name, string content, int fontSize, Vector2 position)
     {
-        GameObject textGO = new GameObject(name);
+        GameObject textGO = new GameObject(name, typeof(RectTransform));
         textGO.transform.SetParent(parent.transform, false);
         Text text = textGO.AddComponent<Text>();
         text.text = content;
@@ -198,116 +213,7 @@ public class BattleDemoGenerator : MonoBehaviour
         text.color = Color.black;
         text.alignment = TextAnchor.MiddleCenter;
         textGO.GetComponent<RectTransform>().anchoredPosition = position;
-        textGO.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 100);
+        textGO.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 20);
         return text;
-    }
-}
-
-
-// --- UI Helper Components ---
-
-public class CombatantStatusUI : MonoBehaviour
-{
-    private Combatant combatant;
-    private Text nameText;
-    private Text healthText;
-    private Slider healthSlider;
-
-    public void Initialize(Combatant target, string displayName)
-    {
-        combatant = target;
-
-        gameObject.AddComponent<VerticalLayoutGroup>();
-        nameText = CreateText(displayName, 24);
-        healthSlider = CreateSlider();
-        healthText = CreateText("100/100", 18);
-    }
-
-    void Update()
-    {
-        if (combatant != null)
-        {
-            float healthPercent = (float)combatant.currentEmotionalStamina / combatant.maxEmotionalStamina;
-            healthSlider.value = healthPercent;
-            healthText.text = $"{combatant.currentEmotionalStamina} / {combatant.maxEmotionalStamina}";
-        }
-    }
-
-    private Text CreateText(string content, int fontSize)
-    {
-        GameObject textGO = new GameObject("StatusText");
-        textGO.transform.SetParent(transform, false);
-        Text text = textGO.AddComponent<Text>();
-        text.text = content;
-        text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-        text.fontSize = fontSize;
-        text.color = Color.white;
-        return text;
-    }
-
-    private Slider CreateSlider()
-    {
-        // This is complex to create from scratch, so we'll just make a simple bar
-        GameObject sliderGO = new GameObject("HealthSlider");
-        sliderGO.transform.SetParent(transform, false);
-        Image bg = sliderGO.AddComponent<Image>();
-        bg.color = Color.red;
-
-        GameObject fillGO = new GameObject("Fill");
-        fillGO.transform.SetParent(sliderGO.transform, false);
-        Image fillImg = fillGO.AddComponent<Image>();
-        fillImg.color = Color.green;
-
-        Slider slider = sliderGO.AddComponent<Slider>();
-        slider.fillRect = fillGO.GetComponent<RectTransform>();
-        slider.targetGraphic = fillImg;
-
-        RectTransform bgRect = sliderGO.GetComponent<RectTransform>();
-        bgRect.sizeDelta = new Vector2(200, 20);
-        RectTransform fillRect = fillGO.GetComponent<RectTransform>();
-        fillRect.sizeDelta = new Vector2(200, 20);
-
-        return slider;
-    }
-}
-
-
-public class CustomHandUIUpdater : MonoBehaviour
-{
-    private ArgumentHandUI handUI;
-    private Combatant player;
-    private Encounter encounter;
-    private GameObject cardTemplate;
-
-    public void Setup(ArgumentHandUI handUI, Combatant player, Encounter encounter, GameObject cardTemplate)
-    {
-        this.handUI = handUI;
-        this.player = player;
-        this.encounter = encounter;
-        this.cardTemplate = cardTemplate;
-    }
-
-    void Update()
-    {
-        // A simple way to check if the hand has changed
-        if (transform.childCount != player.preparedArguments.Count)
-        {
-            UpdateHand();
-        }
-    }
-
-    void UpdateHand()
-    {
-        foreach (Transform child in transform)
-        {
-            Destroy(child.gameObject);
-        }
-
-        foreach (VerbalAbility ability in player.preparedArguments)
-        {
-            GameObject cardGO = Instantiate(cardTemplate, transform);
-            cardGO.SetActive(true);
-            cardGO.GetComponent<AbilityCardUI>().Setup(ability, player, encounter);
-        }
     }
 }

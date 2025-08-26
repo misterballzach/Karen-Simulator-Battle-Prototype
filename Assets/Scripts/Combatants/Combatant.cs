@@ -48,6 +48,12 @@ public class Combatant : MonoBehaviour
 
     void Start()
     {
+        // Initialization is now handled by the Initialize method,
+        // which is called by the encounter setup logic.
+    }
+
+    public void Initialize()
+    {
         currentEmotionalStamina = maxEmotionalStamina;
         currentCredibility = maxCredibility;
         ShuffleLoadout();

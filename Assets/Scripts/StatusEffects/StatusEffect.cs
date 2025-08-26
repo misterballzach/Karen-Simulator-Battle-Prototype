@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public enum StatusEffectType
 {
@@ -17,8 +18,6 @@ public interface IOnDamageTrigger
     /// <returns>Return false to cancel the damage completely.</returns>
     bool OnTakeDamage(Combatant attacker, ref int damage);
 }
-
-using System.Collections.Generic;
 
 public class StatusEffect
 {

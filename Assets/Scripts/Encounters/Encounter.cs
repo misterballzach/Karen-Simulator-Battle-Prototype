@@ -1,9 +1,8 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public enum EncounterState { Start, PlayerTurn, EnemyTurn, Won, Lost, Reward }
-
-using System.Collections.Generic;
 
 public class Encounter : MonoBehaviour
 {

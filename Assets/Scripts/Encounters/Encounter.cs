@@ -62,7 +62,7 @@ public class Encounter : MonoBehaviour
             for (int i = 0; i < 3; i++) combatant.PrepareArgument();
         }
 
-        playerHandUI.UpdateHandUI(); // This will need to be updated to show the active player's hand
+        // playerHandUI.UpdateHandUI(); // This is now handled by CustomHandUIUpdater in the demo scene
 
         yield return new WaitForSeconds(1f);
 
@@ -85,7 +85,7 @@ public class Encounter : MonoBehaviour
 
         // The UI needs to be aware of which player is active
         // playerHandUI.SetTarget(ActiveCombatant); // Imagined method
-        playerHandUI.UpdateHandUI();
+        // playerHandUI.UpdateHandUI(); // This is now handled by CustomHandUIUpdater in the demo scene
         Debug.Log($"{ActiveCombatant.name}'s turn.");
     }
 
@@ -120,7 +120,7 @@ public class Encounter : MonoBehaviour
             {
                 playerCooldowns[ability] = ability.cooldown;
             }
-            playerHandUI.UpdateHandUI();
+            // playerHandUI.UpdateHandUI(); // This is now handled by CustomHandUIUpdater in the demo scene
             StartCoroutine(EndPlayerTurn());
         }
         else

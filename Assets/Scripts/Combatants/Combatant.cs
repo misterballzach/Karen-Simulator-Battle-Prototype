@@ -296,4 +296,9 @@ public class Combatant : MonoBehaviour
             characterSprite.sprite = newSprite;
         }
     }
+
+    public void AnimateAttack(Combatant target)
+    {
+        Debug.Log($"{name} attacks {target.name}");
+    }
 }

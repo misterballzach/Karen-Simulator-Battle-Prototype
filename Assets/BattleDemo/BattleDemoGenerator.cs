@@ -2,11 +2,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using System.Linq;
 
 public class BattleDemoGenerator : MonoBehaviour
 {
     [Header("Assets (Drag from Project)")]
-    public Sprite combatantSprite;
     public Font uiFont; // Optional: for better text rendering
 
     private Encounter encounter;
@@ -19,44 +19,127 @@ public class BattleDemoGenerator : MonoBehaviour
         GameObject encounterGO = new GameObject("EncounterManager");
         encounter = encounterGO.AddComponent<Encounter>();
 
-        // --- Create Abilities and AI ---
-        QuickRetortAbility quickRetort = ScriptableObject.CreateInstance<QuickRetortAbility>();
-        quickRetort.name = "Quick Retort";
-        quickRetort.description = "A swift, cutting remark.";
-        quickRetort.cost = 10;
-        quickRetort.damage = 20;
-        quickRetort.rhetoricalClass = RhetoricalClass.Aggression;
+        // --- Load Sprites ---
+        Sprite playerSprite = Resources.Load<Sprite>("Characters/PNG/Default/blue_body_square");
+        Sprite enemySprite = Resources.Load<Sprite>("Characters/PNG/Default/red_body_square");
+        Sprite aggressionIcon = Resources.Load<Sprite>("UI/PNG/Blue/Default/button_rectangle_flat");
+        Sprite manipulationIcon = Resources.Load<Sprite>("UI/PNG/Blue/Default/button_rectangle_flat");
+        Sprite vulnerabilityIcon = Resources.Load<Sprite>("UI/PNG/Blue/Default/button_rectangle_flat");
+        Sprite delusionIcon = Resources.Load<Sprite>("UI/PNG/Blue/Default/button_rectangle_flat");
 
-        DefensiveStanceAbility defensiveStance = ScriptableObject.CreateInstance<DefensiveStanceAbility>();
-        defensiveStance.name = "Defensive Stance";
-        defensiveStance.description = "Brace for impact.";
-        defensiveStance.cost = 10;
-        defensiveStance.armorGain = 15;
-        defensiveStance.rhetoricalClass = RhetoricalClass.Vulnerability;
+        // --- Create Player & Enemy Abilities ---
+        var abilities = new Dictionary<string, VerbalAbility>();
 
-        DemoEnemyAI enemyAI = ScriptableObject.CreateInstance<DemoEnemyAI>();
+        abilities["Quick Retort"] = ScriptableObject.CreateInstance<QuickRetortAbility>();
+        abilities["Quick Retort"].name = "Quick Retort";
+        abilities["Quick Retort"].description = "A swift, cutting remark.";
+        abilities["Quick Retort"].cost = 10;
+        abilities["Quick Retort"].damage = 15;
+        abilities["Quick Retort"].rhetoricalClass = RhetoricalClass.Aggression;
+        abilities["Quick Retort"].artwork = aggressionIcon;
+
+        abilities["Defensive Stance"] = ScriptableObject.CreateInstance<DefensiveStanceAbility>();
+        abilities["Defensive Stance"].name = "Defensive Stance";
+        abilities["Defensive Stance"].description = "Brace for impact, gaining 15 Armor.";
+        abilities["Defensive Stance"].cost = 10;
+        ((DefensiveStanceAbility)abilities["Defensive Stance"]).armorGain = 15;
+        abilities["Defensive Stance"].rhetoricalClass = RhetoricalClass.Vulnerability;
+        abilities["Defensive Stance"].artwork = vulnerabilityIcon;
+
+        abilities["Entitled Rage"] = ScriptableObject.CreateInstance<EntitledRageAbility>();
+        abilities["Entitled Rage"].name = "Entitled Rage";
+        abilities["Entitled Rage"].description = "Deal 25 damage and gain 15 Entitlement.";
+        abilities["Entitled Rage"].cost = 15;
+        abilities["Entitled Rage"].damage = 25;
+        abilities["Entitled Rage"].rhetoricalClass = RhetoricalClass.Aggression;
+        abilities["Entitled Rage"].artwork = aggressionIcon;
+
+        abilities["Weaponized Tears"] = ScriptableObject.CreateInstance<WeaponizedTearsAbility>();
+        abilities["Weaponized Tears"].name = "Weaponized Tears";
+        abilities["Weaponized Tears"].description = "Deal 5 damage and inflict 2 turns of Guilt.";
+        abilities["Weaponized Tears"].cost = 10;
+        abilities["Weaponized Tears"].damage = 5;
+        abilities["Weaponized Tears"].rhetoricalClass = RhetoricalClass.Manipulation;
+        abilities["Weaponized Tears"].artwork = manipulationIcon;
+
+        abilities["Sincere Apology"] = ScriptableObject.CreateInstance<SincereApologyAbility>();
+        abilities["Sincere Apology"].name = "Sincere Apology";
+        abilities["Sincere Apology"].description = "Heal 20 Stamina and apply Empathy to the target for 2 turns.";
+        abilities["Sincere Apology"].cost = 20;
+        abilities["Sincere Apology"].healing = 20;
+        abilities["Sincere Apology"].rhetoricalClass = RhetoricalClass.Vulnerability;
+        abilities["Sincere Apology"].artwork = vulnerabilityIcon;
+
+        abilities["Fake Allyship"] = ScriptableObject.CreateInstance<FakeAllyshipAbility>();
+        abilities["Fake Allyship"].name = "Fake Allyship";
+        abilities["Fake Allyship"].description = "Heal 5 Stamina, deal 10 damage.";
+        abilities["Fake Allyship"].cost = 10;
+        abilities["Fake Allyship"].damage = 10;
+        abilities["Fake Allyship"].healing = 5;
+        abilities["Fake Allyship"].rhetoricalClass = RhetoricalClass.Manipulation;
+        abilities["Fake Allyship"].artwork = manipulationIcon;
+
+        abilities["Shared Trauma"] = ScriptableObject.CreateInstance<SharedTraumaAbility>();
+        abilities["Shared Trauma"].name = "Shared Trauma";
+        abilities["Shared Trauma"].description = "Both take damage, but the enemy takes more. Both gain 10 Insight.";
+        abilities["Shared Trauma"].cost = 10;
+        abilities["Shared Trauma"].damage = 20;
+        abilities["Shared Trauma"].rhetoricalClass = RhetoricalClass.Vulnerability;
+        abilities["Shared Trauma"].artwork = vulnerabilityIcon;
+
+        abilities["MLM Buff"] = ScriptableObject.CreateInstance<MLMBuffsAbility>();
+        abilities["MLM Buff"].name = "MLM Buff";
+        abilities["MLM Buff"].description = "Apply 'Essential Oil Vigor' to self for 2 turns.";
+        abilities["MLM Buff"].cost = 15;
+        abilities["MLM Buff"].rhetoricalClass = RhetoricalClass.Delusion;
+        abilities["MLM Buff"].artwork = delusionIcon;
+
+        abilities["Facebook Misinformation"] = ScriptableObject.CreateInstance<FacebookMisinformationAbility>();
+        abilities["Facebook Misinformation"].name = "Facebook Misinformation";
+        abilities["Facebook Misinformation"].description = "Applies 'Flustered' to the target.";
+        abilities["Facebook Misinformation"].cost = 10;
+        abilities["Facebook Misinformation"].rhetoricalClass = RhetoricalClass.Delusion;
+        abilities["Facebook Misinformation"].artwork = delusionIcon;
+
+        // --- Create AI ---
+        WellnessWitchKarenAI wellnessWitchAI = ScriptableObject.CreateInstance<WellnessWitchKarenAI>();
 
         // --- Create Combatants ---
-        Combatant player = CreateCombatant("Player", new Vector3(-3, 0, 0), Faction.Player);
-        player.verbalLoadout = new List<VerbalAbility> { quickRetort, defensiveStance, quickRetort, defensiveStance, quickRetort };
+        Combatant player = CreateCombatant("Player", new Vector3(-3.5f, 0, 0), Faction.Player);
+        if (playerSprite != null) player.GetComponent<SpriteRenderer>().sprite = playerSprite;
+        player.verbalLoadout = new List<VerbalAbility> {
+            abilities["Quick Retort"],
+            abilities["Defensive Stance"],
+            abilities["Entitled Rage"],
+            abilities["Weaponized Tears"],
+            abilities["Sincere Apology"],
+            abilities["Fake Allyship"],
+            abilities["Shared Trauma"]
+        };
 
-        // Draw initial hand
-        for (int i = 0; i < 5; i++)
-        {
-            player.PrepareArgument();
-        }
+        Combatant enemy = CreateCombatant("Wellness Witch Karen", new Vector3(3.5f, 0, 0), Faction.Enemy);
+        if (enemySprite != null) enemy.GetComponent<SpriteRenderer>().sprite = enemySprite;
+        enemy.aiProfile = wellnessWitchAI;
+        enemy.verbalLoadout = new List<VerbalAbility> {
+            abilities["Quick Retort"],
+            abilities["MLM Buff"],
+            abilities["Facebook Misinformation"],
+            abilities["Quick Retort"],
+            abilities["MLM Buff"]
+        };
 
-        Combatant enemy = CreateCombatant("Enemy", new Vector3(3, 0, 0), Faction.Enemy);
-        enemy.aiProfile = enemyAI;
-        enemy.verbalLoadout = new List<VerbalAbility> { quickRetort, defensiveStance, quickRetort };
-
-        // --- Link everything to the Encounter ---
+        // --- Final Setup ---
         encounter.playerParty = new List<Combatant> { player };
         encounter.enemyParty = new List<Combatant> { enemy };
         player.currentEncounter = encounter;
         enemy.currentEncounter = encounter;
 
-        // --- Create UI ---
+        for (int i = 0; i < 5; i++)
+        {
+            player.PrepareArgument();
+            enemy.PrepareArgument();
+        }
+
         ArgumentHandUI handUI = CreateArgumentHandUI(canvas, player, encounter);
         encounter.playerHandUI = handUI;
         CreateStatusUI(canvas, player, enemy);
@@ -65,19 +148,14 @@ public class BattleDemoGenerator : MonoBehaviour
         Debug.Log("Battle Demo Generated. Starting encounter...");
     }
 
-    // --- Helper Methods for Creation ---
-
+    #region Helper Methods for UI and Object Creation
     private Combatant CreateCombatant(string name, Vector3 position, Faction faction)
     {
         GameObject go = new GameObject(name);
         go.transform.position = position;
 
-        if (combatantSprite != null)
-        {
-            SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = combatantSprite;
-            sr.transform.localScale = new Vector3(3, 3, 3);
-        }
+        SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
+        sr.transform.localScale = new Vector3(3, 3, 3);
 
         Combatant combatant = go.AddComponent<Combatant>();
         combatant.faction = faction;
@@ -98,7 +176,7 @@ public class BattleDemoGenerator : MonoBehaviour
 
     private void CreateEventSystem()
     {
-        if (FindFirstObjectByType<EventSystem>() == null)
+        if (FindObjectOfType<EventSystem>() == null)
         {
             new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
         }
@@ -106,7 +184,6 @@ public class BattleDemoGenerator : MonoBehaviour
 
     private ArgumentHandUI CreateArgumentHandUI(Canvas canvas, Combatant player, Encounter currentEncounter)
     {
-        // Hand Container
         GameObject handContainerGO = new GameObject("HandContainer");
         handContainerGO.transform.SetParent(canvas.transform, false);
         RectTransform handRect = handContainerGO.AddComponent<RectTransform>();
@@ -125,28 +202,35 @@ public class BattleDemoGenerator : MonoBehaviour
         ArgumentHandUI handUI = handContainerGO.AddComponent<ArgumentHandUI>();
         handUI.player = player;
 
-        // Create the card "prefab" template
         GameObject cardTemplate = new GameObject("CardTemplate");
         cardTemplate.transform.SetParent(handContainerGO.transform);
-        cardTemplate.AddComponent<Image>();
+        cardTemplate.AddComponent<Image>().color = new Color(0.9f, 0.9f, 0.9f);
         RectTransform cardRect = cardTemplate.GetComponent<RectTransform>();
-        cardRect.sizeDelta = new Vector2(120, 150);
+        cardRect.sizeDelta = new Vector2(120, 160);
 
-        // Add UI elements to the card template
-        Text nameText = CreateText(cardTemplate, "NameText", "Ability Name", 14, new Vector2(0, 60));
-        Text descText = CreateText(cardTemplate, "DescriptionText", "Description", 10, new Vector2(0, 0));
-        Text costText = CreateText(cardTemplate, "CostText", "Cost: X", 12, new Vector2(0, -60));
+        GameObject artworkGO = new GameObject("Artwork");
+        artworkGO.transform.SetParent(cardTemplate.transform, false);
+        Image artworkImage = artworkGO.AddComponent<Image>();
+        RectTransform artworkRect = artworkGO.GetComponent<RectTransform>();
+        artworkRect.anchorMin = new Vector2(0, 0.5f);
+        artworkRect.anchorMax = new Vector2(1, 1);
+        artworkRect.pivot = new Vector2(0.5f, 0.5f);
+        artworkRect.offsetMin = new Vector2(10, 50);
+        artworkRect.offsetMax = new Vector2(-10, -10);
 
-        // Add the controller script and set up its references
+        Text nameText = CreateText(cardTemplate, "NameText", "Ability Name", 14, new Vector2(0, 25));
+        Text descText = CreateText(cardTemplate, "DescriptionText", "Description", 10, new Vector2(0, -20));
+        Text costText = CreateText(cardTemplate, "CostText", "Cost: X", 12, new Vector2(0, -65));
+
         AbilityCardUI cardUI = cardTemplate.AddComponent<AbilityCardUI>();
+        cardUI.artworkImage = artworkImage;
         cardUI.nameText = nameText;
         cardUI.descriptionText = descText;
         cardUI.costText = costText;
 
         handUI.abilityPrefab = cardTemplate;
-        cardTemplate.SetActive(false); // Deactivate the template
+        cardTemplate.SetActive(false);
 
-        // Override the UpdateHandUI to use our custom setup
         handUI.gameObject.AddComponent<CustomHandUIUpdater>().Setup(handUI, player, currentEncounter, cardTemplate);
 
         return handUI;
@@ -154,7 +238,6 @@ public class BattleDemoGenerator : MonoBehaviour
 
     private void CreateStatusUI(Canvas canvas, Combatant player, Combatant enemy)
     {
-        // Player Status
         GameObject playerStatusGO = new GameObject("PlayerStatus");
         playerStatusGO.transform.SetParent(canvas.transform, false);
         RectTransform playerRect = playerStatusGO.AddComponent<RectTransform>();
@@ -164,7 +247,6 @@ public class BattleDemoGenerator : MonoBehaviour
         playerRect.anchoredPosition = new Vector2(20, -20);
         playerStatusGO.AddComponent<CombatantStatusUI>().Initialize(player, "Player");
 
-        // Enemy Status
         GameObject enemyStatusGO = new GameObject("EnemyStatus");
         enemyStatusGO.transform.SetParent(canvas.transform, false);
         RectTransform enemyRect = enemyStatusGO.AddComponent<RectTransform>();
@@ -203,8 +285,10 @@ public class BattleDemoGenerator : MonoBehaviour
         text.fontSize = fontSize;
         text.color = Color.black;
         text.alignment = TextAnchor.MiddleCenter;
-        textGO.GetComponent<RectTransform>().anchoredPosition = position;
-        textGO.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 100);
+        RectTransform rectTransform = textGO.GetComponent<RectTransform>();
+        rectTransform.anchoredPosition = position;
+        rectTransform.sizeDelta = new Vector2(100, 100);
         return text;
     }
+    #endregion
 }

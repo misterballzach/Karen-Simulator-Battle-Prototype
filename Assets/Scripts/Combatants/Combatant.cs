@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections; // Required for Coroutines
 
 public class Combatant : MonoBehaviour
 {
@@ -51,6 +52,7 @@ public class Combatant : MonoBehaviour
     {
         currentEmotionalStamina = maxEmotionalStamina;
         currentCredibility = maxCredibility;
+        characterSprite = GetComponent<SpriteRenderer>();
         ShuffleLoadout();
     }
 
@@ -91,6 +93,11 @@ public class Combatant : MonoBehaviour
         int damageToHealth = totalDamage - damageToArmor;
 
         currentEmotionalStamina -= damageToHealth;
+
+        if (damageToHealth > 0)
+        {
+            AnimateDamage();
+        }
 
         if (currentEmotionalStamina < 0) currentEmotionalStamina = 0;
         Debug.Log($"{name} took {damageToHealth} emotional damage ({damageToArmor} absorbed by armor).");
@@ -295,5 +302,54 @@ public class Combatant : MonoBehaviour
         {
             characterSprite.sprite = newSprite;
         }
+    }
+
+    // --- Animation Methods ---
+
+    public void AnimateAttack(Combatant target)
+    {
+        StartCoroutine(AttackRoutine(target.transform.position));
+    }
+
+    private IEnumerator AttackRoutine(Vector3 targetPosition)
+    {
+        Vector3 originalPosition = transform.position;
+        Vector3 attackPosition = originalPosition + (targetPosition - originalPosition).normalized * 1.0f;
+        float duration = 0.1f;
+
+        // Move to target
+        for (float t = 0; t < duration; t += Time.deltaTime)
+        {
+            transform.position = Vector3.Lerp(originalPosition, attackPosition, t / duration);
+            yield return null;
+        }
+        transform.position = attackPosition;
+
+        // Move back
+        for (float t = 0; t < duration; t += Time.deltaTime)
+        {
+            transform.position = Vector3.Lerp(attackPosition, originalPosition, t / duration);
+            yield return null;
+        }
+        transform.position = originalPosition;
+    }
+
+    public void AnimateDamage()
+    {
+        StartCoroutine(DamageFlashRoutine());
+    }
+
+    private IEnumerator DamageFlashRoutine()
+    {
+        if (characterSprite == null) yield break;
+
+        Color originalColor = characterSprite.color;
+        characterSprite.color = Color.red;
+        yield return new WaitForSeconds(0.1f);
+        characterSprite.color = originalColor;
+        yield return new WaitForSeconds(0.1f);
+        characterSprite.color = Color.red;
+        yield return new WaitForSeconds(0.1f);
+        characterSprite.color = originalColor;
     }
 }

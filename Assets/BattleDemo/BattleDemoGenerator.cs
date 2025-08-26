@@ -8,6 +8,14 @@ public class BattleDemoGenerator : MonoBehaviour
 {
     [Header("Assets (Drag from Project)")]
     public Font uiFont; // Optional: for better text rendering
+    public Sprite playerBodySprite;
+    public Sprite playerFaceSprite;
+    public Sprite enemyBodySprite;
+    public Sprite enemyFaceSprite;
+    public Sprite endTurnButtonSprite;
+    public Sprite cardBackgroundSprite;
+    public Sprite sliderBackgroundSprite;
+    public Sprite sliderFillSprite;
 
     private Encounter encounter;
 
@@ -20,12 +28,10 @@ public class BattleDemoGenerator : MonoBehaviour
         encounter = encounterGO.AddComponent<Encounter>();
 
         // --- Load Sprites ---
-        Sprite playerSprite = Resources.Load<Sprite>("Characters/PNG/Default/blue_body_square");
-        Sprite enemySprite = Resources.Load<Sprite>("Characters/PNG/Default/red_body_square");
-        Sprite aggressionIcon = Resources.Load<Sprite>("UI/PNG/Blue/Default/button_rectangle_flat");
-        Sprite manipulationIcon = Resources.Load<Sprite>("UI/PNG/Blue/Default/button_rectangle_flat");
-        Sprite vulnerabilityIcon = Resources.Load<Sprite>("UI/PNG/Blue/Default/button_rectangle_flat");
-        Sprite delusionIcon = Resources.Load<Sprite>("UI/PNG/Blue/Default/button_rectangle_flat");
+        Sprite aggressionIcon = Resources.Load<Sprite>("UI/icon_cross");
+        Sprite manipulationIcon = Resources.Load<Sprite>("UI/icon_circle");
+        Sprite vulnerabilityIcon = Resources.Load<Sprite>("UI/icon_checkmark");
+        Sprite delusionIcon = Resources.Load<Sprite>("UI/icon_square");
 
         // --- Create Player & Enemy Abilities ---
         var abilities = new Dictionary<string, VerbalAbility>();
@@ -105,8 +111,7 @@ public class BattleDemoGenerator : MonoBehaviour
         WellnessWitchKarenAI wellnessWitchAI = ScriptableObject.CreateInstance<WellnessWitchKarenAI>();
 
         // --- Create Combatants ---
-        Combatant player = CreateCombatant("Player", new Vector3(-3.5f, 0, 0), Faction.Player);
-        if (playerSprite != null) player.GetComponent<SpriteRenderer>().sprite = playerSprite;
+        Combatant player = CreateCombatant("Player", new Vector3(-3.5f, 0, 0), Faction.Player, playerBodySprite, playerFaceSprite);
         player.verbalLoadout = new List<VerbalAbility> {
             abilities["Quick Retort"],
             abilities["Defensive Stance"],
@@ -117,8 +122,7 @@ public class BattleDemoGenerator : MonoBehaviour
             abilities["Shared Trauma"]
         };
 
-        Combatant enemy = CreateCombatant("Wellness Witch Karen", new Vector3(3.5f, 0, 0), Faction.Enemy);
-        if (enemySprite != null) enemy.GetComponent<SpriteRenderer>().sprite = enemySprite;
+        Combatant enemy = CreateCombatant("Wellness Witch Karen", new Vector3(3.5f, 0, 0), Faction.Enemy, enemyBodySprite, enemyFaceSprite);
         enemy.aiProfile = wellnessWitchAI;
         enemy.verbalLoadout = new List<VerbalAbility> {
             abilities["Quick Retort"],
@@ -149,13 +153,24 @@ public class BattleDemoGenerator : MonoBehaviour
     }
 
     #region Helper Methods for UI and Object Creation
-    private Combatant CreateCombatant(string name, Vector3 position, Faction faction)
+    private Combatant CreateCombatant(string name, Vector3 position, Faction faction, Sprite bodySprite, Sprite faceSprite)
     {
         GameObject go = new GameObject(name);
         go.transform.position = position;
+        go.transform.localScale = new Vector3(3, 3, 3);
 
-        SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
-        sr.transform.localScale = new Vector3(3, 3, 3);
+        // Body
+        GameObject bodyGO = new GameObject("Body");
+        bodyGO.transform.SetParent(go.transform, false);
+        SpriteRenderer bodySr = bodyGO.AddComponent<SpriteRenderer>();
+        bodySr.sprite = bodySprite;
+
+        // Face
+        GameObject faceGO = new GameObject("Face");
+        faceGO.transform.SetParent(go.transform, false);
+        SpriteRenderer faceSr = faceGO.AddComponent<SpriteRenderer>();
+        faceSr.sprite = faceSprite;
+        faceSr.sortingOrder = 1; // Ensure face is drawn on top of body
 
         Combatant combatant = go.AddComponent<Combatant>();
         combatant.faction = faction;
@@ -204,7 +219,16 @@ public class BattleDemoGenerator : MonoBehaviour
 
         GameObject cardTemplate = new GameObject("CardTemplate");
         cardTemplate.transform.SetParent(handContainerGO.transform);
-        cardTemplate.AddComponent<Image>().color = new Color(0.9f, 0.9f, 0.9f);
+        Image cardImage = cardTemplate.AddComponent<Image>();
+        if (cardBackgroundSprite != null)
+        {
+            cardImage.sprite = cardBackgroundSprite;
+            cardImage.type = Image.Type.Sliced;
+        }
+        else
+        {
+            cardImage.color = new Color(0.9f, 0.9f, 0.9f);
+        }
         RectTransform cardRect = cardTemplate.GetComponent<RectTransform>();
         cardRect.sizeDelta = new Vector2(120, 160);
 
@@ -245,7 +269,10 @@ public class BattleDemoGenerator : MonoBehaviour
         playerRect.anchorMax = new Vector2(0, 1);
         playerRect.pivot = new Vector2(0, 1);
         playerRect.anchoredPosition = new Vector2(20, -20);
-        playerStatusGO.AddComponent<CombatantStatusUI>().Initialize(player, "Player");
+        CombatantStatusUI playerStatusUI = playerStatusGO.AddComponent<CombatantStatusUI>();
+        playerStatusUI.sliderBackgroundSprite = sliderBackgroundSprite;
+        playerStatusUI.sliderFillSprite = sliderFillSprite;
+        playerStatusUI.Initialize(player, "Player");
 
         GameObject enemyStatusGO = new GameObject("EnemyStatus");
         enemyStatusGO.transform.SetParent(canvas.transform, false);
@@ -254,16 +281,25 @@ public class BattleDemoGenerator : MonoBehaviour
         enemyRect.anchorMax = new Vector2(1, 1);
         enemyRect.pivot = new Vector2(1, 1);
         enemyRect.anchoredPosition = new Vector2(-20, -20);
-        enemyStatusGO.AddComponent<CombatantStatusUI>().Initialize(enemy, "Enemy");
+        CombatantStatusUI enemyStatusUI = enemyStatusGO.AddComponent<CombatantStatusUI>();
+        enemyStatusUI.sliderBackgroundSprite = sliderBackgroundSprite;
+        enemyStatusUI.sliderFillSprite = sliderFillSprite;
+        enemyStatusUI.Initialize(enemy, "Enemy");
     }
 
     private void CreateEndTurnButton(Canvas canvas, Encounter currentEncounter)
     {
         GameObject buttonGO = new GameObject("EndTurnButton");
         buttonGO.transform.SetParent(canvas.transform, false);
-        buttonGO.AddComponent<Image>();
+        Image buttonImage = buttonGO.AddComponent<Image>();
+        if (endTurnButtonSprite != null)
+        {
+            buttonImage.sprite = endTurnButtonSprite;
+            buttonImage.type = Image.Type.Sliced;
+        }
         Button button = buttonGO.AddComponent<Button>();
         button.onClick.AddListener(currentEncounter.OnEndTurnButton);
+        button.onClick.AddListener(AudioManager.Instance.PlayClickSound);
 
         RectTransform rect = buttonGO.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(1, 0);

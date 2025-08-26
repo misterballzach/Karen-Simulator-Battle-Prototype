@@ -257,6 +257,7 @@ public class Encounter : MonoBehaviour
 
         if (state == EncounterState.Won)
         {
+            AudioManager.Instance.PlayVictoryJingle();
             Debug.Log("Player party won the encounter!");
             // For now, base liberation/reputation on the state of the first enemy
             var enemyLeader = enemyParty.FirstOrDefault();
@@ -291,6 +292,7 @@ public class Encounter : MonoBehaviour
         }
         else if (state == EncounterState.Lost)
         {
+            AudioManager.Instance.PlayDefeatJingle();
             Debug.Log("Player party was defeated.");
         }
     }

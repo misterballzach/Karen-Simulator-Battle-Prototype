@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 public class CombatantStatusUI : MonoBehaviour
 {
+    public Sprite sliderBackgroundSprite;
+    public Sprite sliderFillSprite;
+
     private Combatant combatant;
     private Text nameText;
     private Text healthText;
@@ -46,12 +49,28 @@ public class CombatantStatusUI : MonoBehaviour
         GameObject sliderGO = new GameObject("HealthSlider");
         sliderGO.transform.SetParent(transform, false);
         Image bg = sliderGO.AddComponent<Image>();
-        bg.color = Color.red;
+        if (sliderBackgroundSprite != null)
+        {
+            bg.sprite = sliderBackgroundSprite;
+            bg.type = Image.Type.Sliced;
+        }
+        else
+        {
+            bg.color = Color.red;
+        }
 
         GameObject fillGO = new GameObject("Fill");
         fillGO.transform.SetParent(sliderGO.transform, false);
         Image fillImg = fillGO.AddComponent<Image>();
-        fillImg.color = Color.green;
+        if (sliderFillSprite != null)
+        {
+            fillImg.sprite = sliderFillSprite;
+            fillImg.type = Image.Type.Sliced;
+        }
+        else
+        {
+            fillImg.color = Color.green;
+        }
 
         Slider slider = sliderGO.AddComponent<Slider>();
         slider.fillRect = fillGO.GetComponent<RectTransform>();

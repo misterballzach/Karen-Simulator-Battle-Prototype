@@ -295,7 +295,7 @@ public class BattleDemoGenerator : MonoBehaviour
         if (endTurnButtonSprite != null)
         {
             buttonImage.sprite = endTurnButtonSprite;
-            buttonImage.type = Image.Type.Sliced;
+            buttonImage.type = Image.Type.Simple;
         }
         Button button = buttonGO.AddComponent<Button>();
         button.onClick.AddListener(currentEncounter.OnEndTurnButton);

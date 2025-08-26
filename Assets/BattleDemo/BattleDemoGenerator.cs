@@ -191,7 +191,7 @@ public class BattleDemoGenerator : MonoBehaviour
 
     private void CreateEventSystem()
     {
-        if (FindObjectOfType<EventSystem>() == null)
+        if (FindAnyObjectByType<EventSystem>() == null)
         {
             new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
         }

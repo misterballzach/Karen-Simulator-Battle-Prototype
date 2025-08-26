@@ -40,6 +40,12 @@ public class BattleDemoGenerator : MonoBehaviour
         Combatant player = CreateCombatant("Player", new Vector3(-3, 0, 0), Faction.Player);
         player.verbalLoadout = new List<VerbalAbility> { quickRetort, defensiveStance, quickRetort, defensiveStance, quickRetort };
 
+        // Draw initial hand
+        for (int i = 0; i < 5; i++)
+        {
+            player.PrepareArgument();
+        }
+
         Combatant enemy = CreateCombatant("Enemy", new Vector3(3, 0, 0), Faction.Enemy);
         enemy.aiProfile = enemyAI;
         enemy.verbalLoadout = new List<VerbalAbility> { quickRetort, defensiveStance, quickRetort };

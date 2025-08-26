@@ -21,9 +21,9 @@ This folder contains a procedural battle demo. Follow the steps below to run it.
 
 5.  **Assign the sprite asset:**
     - The `BattleDemoGenerator` component has a field called "Combatant Sprite".
-    - In the Project window, navigate to the `Assets/LipSyncDemo/Textures` folder.
+    - In the Project window, navigate to the `Assets/BattleDemo` folder.
     - Find the `hecomi-base` sprite.
-    - **Drag** the `hecomi-base` sprite from the Project window into the "Combatant Sprite" field in the Inspector.
+    - **Drag** the `hecomi-base` sprite from the Project window into the "Combatant Sprite" field in the Inspector. This field is on the "DemoGenerator" object you created.
 
 6.  **Play the scene:**
     - Press the Play button at the top of the Unity Editor.

@@ -4,8 +4,16 @@ using UnityEngine.UI;
 using UnityEditor.SceneManagement;
 using UnityEngine.Events;
 
+/// <summary>
+/// An editor script to automatically set up a test scene for the dialogue system.
+/// This creates all necessary GameObjects, UI, and ScriptableObject assets.
+/// </summary>
 public class DialogueTestSceneSetup
 {
+    /// <summary>
+    /// Creates a new scene and populates it with a complete dialogue test setup.
+    /// Accessible from the Unity menu under "KAREN/Setup Dialogue Test Scene".
+    /// </summary>
     [MenuItem("KAREN/Setup Dialogue Test Scene")]
     public static void SetupScene()
     {
@@ -133,23 +141,30 @@ public class DialogueTestSceneSetup
         });
 
         // --- Create Start Button ---
-        var startButtonGO = new GameObject("StartDialogueButton", typeof(Button), typeof(Image));
+        var startButtonGO = new GameObject("StartDialogueButton", typeof(Image), typeof(Button), typeof(StartDialogueButton));
+        var startDialogueComp = startButtonGO.GetComponent<StartDialogueButton>();
+        startDialogueComp.startingNode = node1;
+
         startButtonGO.transform.SetParent(canvas.transform, false);
         var startButtonRect = startButtonGO.GetComponent<RectTransform>();
         startButtonRect.sizeDelta = new Vector2(160, 30);
         startButtonRect.anchoredPosition = new Vector2(0, 200);
-        var startButton = startButtonGO.GetComponent<Button>();
+
         var startButtonText = new GameObject("Text", typeof(Text)).GetComponent<Text>();
         startButtonText.transform.SetParent(startButtonGO.transform, false);
         startButtonText.font = Font.CreateDynamicFontFromOSFont("Arial", 14);
         startButtonText.text = "Start Dialogue";
         startButtonText.color = Color.black;
         startButtonText.alignment = TextAnchor.MiddleCenter;
+        var startButtonTextRect = startButtonText.GetComponent<RectTransform>();
+        startButtonTextRect.anchorMin = Vector2.zero;
+        startButtonTextRect.anchorMax = Vector2.one;
+        startButtonTextRect.offsetMin = Vector2.zero;
+        startButtonTextRect.offsetMax = Vector2.zero;
 
-        UnityAction action = () => { dialogueManager.StartDialogue(node1); };
-        startButton.onClick.AddListener(action);
-
-        EditorUtility.SetDirty(startButton); // This is needed to save the listener
+        var startButton = startButtonGO.GetComponent<Button>();
+        UnityAction action = startDialogueComp.StartDialogue;
+        UnityEditor.Events.UnityEventTools.AddPersistentListener(startButton.onClick, action);
 
         // --- Finalize ---
         AssetDatabase.SaveAssets();
@@ -158,6 +173,9 @@ public class DialogueTestSceneSetup
         Debug.Log("Dialogue Test Scene setup complete!");
     }
 
+    /// <summary>
+    /// A helper method to create, configure, and save a DialogueNode ScriptableObject asset.
+    /// </summary>
     private static DialogueNode CreateNode(string path, string assetName, Character character, string expression, string text, AudioClip clip, DialogueNode linearNext, System.Collections.Generic.List<ChoiceData> choicesData)
     {
         var node = ScriptableObject.CreateInstance<DialogueNode>();
@@ -173,8 +191,10 @@ public class DialogueTestSceneSetup
             foreach (var choiceData in choicesData)
             {
                 var choice = new Choice { choiceText = choiceData.text, nextNode = choiceData.nextNode, onChoiceSelected = new UnityEvent() };
-                if (choiceData.eventTarget != null)
+                if (choiceData.eventTarget != null && !string.IsNullOrEmpty(choiceData.eventMethodName))
                 {
+                    // Using SendMessage because it's a reliable way to set up listeners from an editor script
+                    // without needing a direct reference to the method.
                     UnityAction action = () => { choiceData.eventTarget.SendMessage(choiceData.eventMethodName); };
                     UnityEditor.Events.UnityEventTools.AddPersistentListener(choice.onChoiceSelected, action);
                 }
@@ -187,6 +207,9 @@ public class DialogueTestSceneSetup
     }
 }
 
+/// <summary>
+/// A helper class to hold temporary data for creating a Choice within the test scene setup script.
+/// </summary>
 public class ChoiceData
 {
     public string text;
